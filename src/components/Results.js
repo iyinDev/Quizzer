@@ -1,5 +1,8 @@
 import {useEffect, useRef, useState} from "react";
 
+/**
+ * The Results Modal
+ */
 export function Results(props) {
     const ref = useRef()
     const [correctAnswers, setCorrectAnswers] = useState([])
@@ -9,6 +12,7 @@ export function Results(props) {
 
     const { n } = index
 
+    // Displays score.
     useEffect(() => {
         let count = 0
         userAnswers.forEach(answer => count += (answer === true? 1 : 0))

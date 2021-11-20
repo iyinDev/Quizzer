@@ -1,18 +1,22 @@
 import {useRef} from "react";
 
-export function Check(props) {
-    const { index, curr, answer, usrAnswrs, rnning, scre } = props
+/**
+ * The button to check a choice and move to the next question.
+ */
+export function ChoiceEvaluator(props) {
+    const { indx, curr, answer, usrAnswrs, rnning, scre } = props
     const { running, setRunning } = rnning
     const { score, setScore } = scre
     const ref = useRef()
 
-    const { getIndex, setIndex, n } = index, indexVal = getIndex, setIndexVal = setIndex
+    const { index, setIndex, n } = indx
     const { currentChoice, setCurrentChoice } = curr
     const { userAnswers, setUserAnswers } = usrAnswrs
 
+    // Moves to next question or ends quiz if last question has been answered.
     function nextQuestion() {
-        if (indexVal + 1 < n) {
-            setIndexVal(index => index + 1)
+        if (index + 1 < n) {
+            setIndex(index => index + 1)
             setCurrentChoice(null)
         } else {
             if (running) {
@@ -21,6 +25,7 @@ export function Check(props) {
         }
     }
 
+    // Compares the current choice to the question answer, and scores
     function handler() {
         let correct
         if (!currentChoice) {

@@ -1,8 +1,11 @@
 import {useRef} from "react";
 
+/**
+ * The Score component.
+ */
 export function Score(props) {
     const { scre } = props
-    const { score, setScore } = scre
+    const { score} = scre
     const ref = useRef()
 
     return (

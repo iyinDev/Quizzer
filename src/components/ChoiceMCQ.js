@@ -1,17 +1,19 @@
 import {useEffect, useRef, useState} from "react";
 
-export function Choice(props) {
+/**
+ * The Multiple Choice Question Choice component.
+ */
+export function ChoiceMCQ(props) {
     const { mcq, curr } = props
     const { currentChoice, setCurrentChoice } = curr
 
     const ref = useRef()
-    const [correct, setCorrect] = useState(null);
 
     const choiceClass =  props.class
 
+    // Adjusts text size based on string length.
     useEffect(() => {
         if (mcq) {
-            setCorrect(mcq.choices[choiceClass] === mcq.correctAnswer)
             const text = mcq.choices[choiceClass]
             if (text.length >= 30) {
                 ref.current.style.fontSize = "4vmin"
@@ -23,6 +25,7 @@ export function Choice(props) {
         }
     }, [props])
 
+    // Applies the "current" effect on a selected Choice component.
     useEffect(() => {
         if (curr) {
             if (ref === currentChoice) {
@@ -33,6 +36,7 @@ export function Choice(props) {
         }
     }, [curr])
 
+    // Sets ref as the currentChoice state.
     const handler = () => {
         setCurrentChoice(ref)
     }

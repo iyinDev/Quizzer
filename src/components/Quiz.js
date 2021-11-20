@@ -11,16 +11,15 @@ import {Score} from "./Score";
  * @constructor
  */
 export function Quiz(props) {
+    const { amount, category, difficulty, type } = props
     const { get, response } = useFetch('https://opentdb.com')
 
     const [ questions, setQuestions ] = useState([])
     const [ userAnswers, setUserAnswers ] = useState([]), usrAnswrs = {userAnswers: userAnswers, setUserAnswers: setUserAnswers}
-    const [ index, setIndex ] = useState(0), indx = {getIndex: index, setIndex: setIndex, n: props.amount}
+    const [ index, setIndex ] = useState(0), indx = {index: index, setIndex: setIndex, n: amount}
     const [ score, setScore ] = useState(0), scre = {score: score, setScore: setScore}
 
     async function initializeQuiz() {
-        const { amount, category, difficulty, type } = props
-
         const skeleton = '/api.php?'
         const qR = await get(
             skeleton
@@ -45,7 +44,7 @@ export function Quiz(props) {
 
     useEffect(() => {
         if (userAnswers) {
-            console.log(userAnswers)
+            console.log('User answers. -> ' + userAnswers)
         }
     }, [userAnswers])
 
@@ -54,8 +53,8 @@ export function Quiz(props) {
             <Results usrAnswrs={usrAnswrs} index={indx}/>
             <div className={"quiz"}>
                 <Score scre={scre}/>
-                <span className={"logo"}>QUIZZER</span>
-                <MultipleChoiceQuestion mcq={questions[index]} userAnswers={usrAnswrs} index={indx} scre={scre}/>
+                <span className={"logo"}>QUIZZER!</span>
+                <MultipleChoiceQuestion mcq={questions[index]} usrAnswrs={usrAnswrs} indx={indx} scre={scre}/>
             </div>
         </div>
 
