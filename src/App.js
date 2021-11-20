@@ -7,6 +7,7 @@ function App() {
 
     return (
     <div className="App">
+        {/*Quiz Component*/}
         <Quiz amount={'10'} type={'multiple'} difficulty={"easy"}/>
     </div>
     );
