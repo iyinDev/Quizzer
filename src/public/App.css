@@ -1,38 +1,216 @@
+:root {
+  --quizzer-font: 'Roboto Slab', serif;
+
+  --primary: #0000A3;
+  --secondary: #0067B3;
+  --tertiary: #40B0DF;
+  --quaternary: #FFD53D;
+  --pentary: #48cb4e;
+}
+
 .App {
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+
+/*#youritem .fade.in {*/
+/*  animation-name: fadeIn;*/
+/*}*/
+
+/*#youritem .fade.out {*/
+/*  animation-name: fadeOut;*/
+/*}*/
+
+/*@keyframes fadeIn {*/
+/*  0% {*/
+/*    opacity: 0;*/
+/*    transform: translateY(startYposition);*/
+/*  }*/
+/*  100% {*/
+/*    opacity: 1;*/
+/*    transform: translateY(endYposition);*/
+/*  }*/
+/*}*/
+
+/*@keyframes fadeOut {*/
+/*  0% {*/
+/*    opacity: 1;*/
+/*    transform: translateY(startYposition);*/
+/*  }*/
+/*  100% {*/
+/*    opacity: 0;*/
+/*    transform: translateY(endYposition);*/
+/*  }*/
+/*}*/
+
+html, body {
+  height: 100vh;
+  background: var(--secondary);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+* {
+  transition: 0.4s;
+}
+
+button {
+  cursor: pointer;
+}
+
+@keyframes slideFromTop {
+  0% {top: -100vh;}
+  /*25% {top: -75vh}*/
+  /*50% {top: -50vh;}*/
+  /*75% {top: -25vh}*/
+  100% {top: 0;}
+}
+
+.results-background {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 2; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100vw; /* Full width */
+  height: 100vh; /* Full height */
+  background-image: linear-gradient(45deg, #fdd02f 10%, var(--quaternary) 100%);
+
+  animation-name: slideFromTop;
+  animation-duration: 0.8s;
+}
+  .results-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
   }
-}
+    .results {
+      font-size: 9vw;
+      font-weight: 900;
+      font-family: var(--quizzer-font);
+      letter-spacing: 0.5vw;
+    }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
+.quiz {
+  width: 90vw;
+  height: 60%;
 
-.App-link {
-  color: #61dafb;
+  margin: 0 auto;
+  position: relative;
 }
+  .internal,
+    .score,
+    .logo,
+    .check {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+    position: absolute;
+
+    height: 7.5vh;
+    width: 15vmax;
+    margin: 3vh;
+
+    z-index: 1;
   }
-  to {
-    transform: rotate(360deg);
+  .score {
+    background: var(--secondary);
+    top: 2vh;
+    right: 0;
+    font-size: 3vmin;
+    font-weight: 900;
+    color: var(--quaternary);
+    width: 20vmax;
+    height: 10vh;
   }
-}
+  .logo {
+    top: 1.25vh;
+    left: 1.25vw;
+
+    font-size: 3.5vw;
+    letter-spacing: 0.05vw;
+    font-weight: 900;
+    font-family: 'Roboto Slab', serif;
+    color: var(--primary);
+  }
+  .check {
+    background: var(--pentary);
+    bottom: 0;
+    right: 0;
+
+    width: 7.5vmax;
+
+    box-sizing: border-box;
+    border: 0;
+
+    transition: 0.1s ease-out;
+  }
+    .check:active {
+      bottom: -0.3vh;
+    }
+
+
+.question {
+    margin: 2vh auto;
+  }
+  .question-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: var(--quaternary);
+
+    height: 55vh;
+    padding: 8vh 3vw 1vh;
+
+    color: #000000;
+    font-size: 3.3vmax;
+    font-weight: 900;
+
+    box-sizing: border-box;
+
+    position: relative;
+
+    transition-delay: 0.55s;
+  }
+  .question-progress {
+    height: 2vh;
+
+    background: var(--pentary);
+    transition: ease-in-out 1s;
+  }
+  .question-progress-background {
+    background: indianred;
+  }
+  .choices {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 1vmax;
+
+    width: 100%;
+  }
+    .choice,
+      .A, .B, .C, .D{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      background: var(--pentary);
+
+      height: 15vh;
+      padding: 3vmin;
+
+      color: black;
+      font-size: 7vmin;
+      font-weight: 600;
+
+      box-sizing: border-box;
+      border: 0;
+    }
+
+      .current {
+        box-shadow: rgba(0, 0, 0, 0.4) 0 .2rem .4rem, rgba(0, 0, 0, 0.3) 0px .7rem 1.3rem -.3rem, rgba(0, 0, 0, 0.2) 0px -.3rem 0px inset;
+      }
+
+
