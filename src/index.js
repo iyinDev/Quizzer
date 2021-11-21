@@ -3,13 +3,15 @@ import ReactDOM from 'react-dom';
 import './public/index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import {Route, Router, Routes} from "react-router-dom";
+import {Login} from "./components/routes/login/Login";
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+const element = (
+    <App/>
+)
+const container = document.getElementById('root')
+
+ReactDOM.render(element, container);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

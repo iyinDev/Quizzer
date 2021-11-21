@@ -1,4 +1,5 @@
 import {useEffect, useRef, useState} from "react";
+import {LinkToHome} from "../../buttons/RouteLink";
 
 /**
  * The Results Modal
@@ -24,6 +25,7 @@ export function Results(props) {
         <div ref={ref} id={"results"} className={"results-background"}>
             <div className={"results-container"}>
                 <div className={"results"}>{correctAnswers}</div>
+                <LinkToHome/>
             </div>
         </div>
     )

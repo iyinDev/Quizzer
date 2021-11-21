@@ -15,12 +15,14 @@ export function ChoiceMCQ(props) {
     useEffect(() => {
         if (mcq) {
             const text = mcq.choices[choiceClass]
-            if (text.length >= 30) {
-                ref.current.style.fontSize = "4vmin"
-            } else if (text.length < 30 && text.length >= 15 ) {
-                ref.current.style.fontSize = "4.5vmin"
-            } else {
-                ref.current.style.fontSize = "7vmin"
+            if (text) {
+                if (text.length >= 30) {
+                    ref.current.style.fontSize = "4vmin"
+                } else if (text.length < 30 && text.length >= 15 ) {
+                    ref.current.style.fontSize = "4.5vmin"
+                } else {
+                    ref.current.style.fontSize = "7vmin"
+                }
             }
         }
     }, [props])
