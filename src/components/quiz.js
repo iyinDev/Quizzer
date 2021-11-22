@@ -1,8 +1,8 @@
 import {useEffect, useRef, useState} from "react";
 import {useFetch} from "use-http";
 import {useParams} from "react-router-dom";
-import {LinkToHome} from "./button";
 import useCountDown from "react-countdown-hook";
+import {LinkToHome} from "./routes";
 
 // Quiz helper classes and functions.
 
@@ -32,7 +32,7 @@ function shuffleArray(array) {
 /**
  * An Object to store the information to display a multiple choice question.
  */
-export class MultipleChoiceQuestionBucket {
+class MultipleChoiceQuestionBucket {
     constructor({ question, category, difficulty, correct_answer, incorrect_answers }) {
         this.question = htmlDecode(question)
         this.category = category
@@ -60,7 +60,7 @@ export class MultipleChoiceQuestionBucket {
  * Displays on MultipleChoiceQuestionBucket.
  * @returns {JSX.Element}
  */
-export function MultipleChoiceQuestion({ scre, mcq, usrAnswrs, indx }) {
+function MultipleChoiceQuestion({ scre, mcq, usrAnswrs, indx }) {
     const ref = useRef()
     const [ currentChoice, setCurrentChoice ] = useState(null), curr = {currentChoice: currentChoice, setCurrentChoice: setCurrentChoice}
     const [running, setRunning] = useState(false), rnning = {running: running, setRunning: setRunning}
@@ -88,7 +88,7 @@ export function MultipleChoiceQuestion({ scre, mcq, usrAnswrs, indx }) {
  * The Multiple Choice Question Choice component.
  * @returns {JSX.Element}
  */
-export function ChoiceMCQ({ mcq, curr, choiceClass }) {
+function ChoiceMCQ({ mcq, curr, choiceClass }) {
     const { currentChoice, setCurrentChoice } = curr
 
     const ref = useRef()
@@ -136,7 +136,7 @@ export function ChoiceMCQ({ mcq, curr, choiceClass }) {
  * The progress bar at the bottom of the question card.
  * @returns {JSX.Element}
  */
-export function ProgressBar({ rnning }) {
+function ProgressBar({ rnning }) {
     const ref = useRef()
 
     const { running, setRunning } = rnning
@@ -186,11 +186,14 @@ export function ProgressBar({ rnning }) {
     )
 }
 
+
+// Quiz component button.
+
 /**
  * The Score component.
  * @returns {JSX.Element}
  */
-export function Score({ scre }) {
+function Score({ scre }) {
     const { score } = scre
     const ref = useRef()
 
@@ -206,7 +209,7 @@ export function Score({ scre }) {
  * The button to check a choice and move to the next question.
  * @returns {JSX.Element}
  */
-export function ChoiceEvaluator({ indx, curr, answer, usrAnswrs, rnning, scre}) {
+function ChoiceEvaluator({ indx, curr, answer, usrAnswrs, rnning, scre}) {
     const { running, setRunning } = rnning
     const { score, setScore } = scre
     const ref = useRef()
@@ -264,7 +267,7 @@ export function ChoiceEvaluator({ indx, curr, answer, usrAnswrs, rnning, scre}) 
  * The Results Modal.
  * @returns {JSX.Element}
  */
-export function Results({ usrAnswrs, index }) {
+function Results({ usrAnswrs, index }) {
     const ref = useRef()
     const [scoreMessage, setScoreMessage] = useState([])
 

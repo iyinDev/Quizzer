@@ -7,7 +7,7 @@ import {useNavigate} from "react-router-dom";
  * A button that logs in a current user.
  * @returns {JSX.Element}
  */
-export function LoginButton() {
+function LoginButton() {
     const auth = getAuth()
     const navigate = useNavigate()
     const provider = new GoogleAuthProvider();

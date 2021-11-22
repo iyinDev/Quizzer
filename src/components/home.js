@@ -7,7 +7,7 @@ import {useNavigate} from "react-router-dom";
  * A button that logs out the current user.
  * @returns {JSX.Element}
  */
-export function LogoutButton() {
+function LogoutButton() {
     const auth = getAuth()
     const navigate = useNavigate()
 
@@ -36,7 +36,7 @@ export function LogoutButton() {
  * A button to navigate to the GenerateQuiz component.
  * @returns {JSX.Element}
  */
-export function ConfigureQuizButton() {
+function ConfigureQuizButton() {
     const navigate = useNavigate()
 
     /**

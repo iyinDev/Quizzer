@@ -1,11 +1,11 @@
 import {useEffect, useState} from "react";
 import useFetch from "use-http";
-import {LinkToHome} from "./button";
 import {useNavigate} from "react-router-dom";
+import {LinkToHome} from "./routes";
 
 // GenerateQuiz helper classes and functions.
 
-export function generateQuizId() {
+function generateQuizId() {
     var S4 = function() {
         return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
     };
@@ -21,7 +21,7 @@ export function generateQuizId() {
  * @param formSetter a function that sets the innerHTML value of the input div.
  * @returns {JSX.Element}
  */
-export function DropdownItem({ value, formSetter }) {
+function DropdownItem({ value, formSetter }) {
     const [ itemValue ] = useState(value)
 
     return (
@@ -38,7 +38,7 @@ export function DropdownItem({ value, formSetter }) {
  * @param formSetter a function that sets the innerHTML value of the input div ( passed to DropdownItem ).
  * @returns {JSX.Element}
  */
-export function DropdownMenu({ label, content, formSetter }) {
+function DropdownMenu({ label, content, formSetter }) {
 
     /**
      * Shows the DropdownMenu div
@@ -63,7 +63,7 @@ export function DropdownMenu({ label, content, formSetter }) {
  * @param content an Object where each key value is a list item for the DropdownMenu.
  * @returns {JSX.Element}
  */
-export function QuizParameterForm({ label, content }) {
+function QuizParameterForm({ label, content }) {
     const [ formValue, setFormValue ] = useState("")
 
     return (
@@ -85,7 +85,7 @@ export function QuizParameterForm({ label, content }) {
  * @param categories An Object containing all available categories { id: category } ( passed from the GenerateQuiz component )
  * @returns {JSX.Element}
  */
-export function SubmitQuizFormButton({ categories }) {
+function SubmitQuizFormButton({ categories }) {
     const navigate = useNavigate()
 
     /**
