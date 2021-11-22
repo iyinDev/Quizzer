@@ -4,7 +4,7 @@ import './public/index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {Route, Router, Routes} from "react-router-dom";
-import {Login} from "./components/routes/login/Login";
+import {Login} from "./components/login";
 
 const element = (
     <App/>

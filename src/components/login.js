@@ -1,9 +1,20 @@
 import {getAuth, GoogleAuthProvider, signInWithPopup} from "firebase/auth";
+import {useNavigate} from "react-router-dom";
 
+// Login component buttons.
+
+/**
+ * A button that logs in a current user.
+ * @returns {JSX.Element}
+ */
 export function LoginButton() {
     const auth = getAuth()
+    const navigate = useNavigate()
     const provider = new GoogleAuthProvider();
 
+    /**
+     * Logs in the current user.
+     */
     function loginHandler() {
         signInWithPopup(auth, provider)
             .then((result) => {
@@ -11,6 +22,7 @@ export function LoginButton() {
                 const token = credential.accessToken
                 const user = result.user
                 console.log(user.email + " just signed in.")
+                navigate("/home")
             }).catch((error) => {
             const errorCode = error.code;
             const errorMessage = error.message;
@@ -21,5 +33,23 @@ export function LoginButton() {
 
     return (
         <button className={"login-button"} onClick={loginHandler}>Login</button>
+    )
+}
+
+
+// Page component.
+
+/**
+ * The Login page component.
+ * @returns {JSX.Element}
+ */
+export function Login() {
+    return (
+        <div className={"login-background"}>
+            <div className={"home-logo login-logo"}>
+                <span>QUIZZER!</span>
+            </div>
+            <LoginButton/>
+        </div>
     )
 }
