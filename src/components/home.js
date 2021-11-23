@@ -18,7 +18,7 @@ function LogoutButton() {
 
         const lastUser = auth.currentUser.email
         signOut(auth).then(() => {
-            console.log(lastUser + " just signed out.")
+            console.log("User signed out. -> " + lastUser)
             if (!auth.currentUser) {
                 navigate("/login")
             }

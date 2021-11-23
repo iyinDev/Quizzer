@@ -1,5 +1,6 @@
 import {getAuth, GoogleAuthProvider, signInWithPopup} from "firebase/auth";
-import {useNavigate} from "react-router-dom";
+import {Navigate, useNavigate} from "react-router-dom";
+import {useAuthState} from "react-firebase-hooks/auth";
 
 // Login component buttons.
 
@@ -7,9 +8,8 @@ import {useNavigate} from "react-router-dom";
  * A button that logs in a current user.
  * @returns {JSX.Element}
  */
-function LoginButton() {
+export function LoginButton() {
     const auth = getAuth()
-    const navigate = useNavigate()
     const provider = new GoogleAuthProvider();
 
     /**
@@ -18,17 +18,20 @@ function LoginButton() {
     function loginHandler() {
         signInWithPopup(auth, provider)
             .then((result) => {
-                const credential = GoogleAuthProvider.credentialFromResult(result)
-                const token = credential.accessToken
-                const user = result.user
-                console.log(user.email + " just signed in.")
-                navigate("/home")
+                const credential = GoogleAuthProvider.credentialFromResult(result);
+                const token = credential.accessToken;
+                const user = result.user;
+                console.log("User signed in. -> " + user.email)
+                // ...
             }).catch((error) => {
-            const errorCode = error.code;
             const errorMessage = error.message;
             const email = error.email;
+            // The AuthCredential type that was used.
             const credential = GoogleAuthProvider.credentialFromError(error);
-        })
+
+            console.log("Error. -> "  + errorMessage + " -> " + email)
+            // ...
+        });
     }
 
     return (
@@ -44,12 +47,24 @@ function LoginButton() {
  * @returns {JSX.Element}
  */
 export function Login() {
+
+    const auth = getAuth()
+    const [user] = useAuthState(auth)
+
+    function Page() {
+        return(
+            <div>
+                <div className={"home-logo login-logo"}>
+                    <span>QUIZZER!</span>
+                </div>
+                <LoginButton/>
+            </div>
+        )
+    }
+
     return (
         <div className={"login-background"}>
-            <div className={"home-logo login-logo"}>
-                <span>QUIZZER!</span>
-            </div>
-            <LoginButton/>
+            {user? <Navigate to={"/home"}/> : <Page/>}
         </div>
     )
 }

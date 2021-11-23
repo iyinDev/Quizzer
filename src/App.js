@@ -4,22 +4,20 @@ import './public/generate-quiz.css'
 import './public/home.css'
 import './public/login.css'
 
-import { Quiz } from "./components/quiz";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+
 import { initializeApp } from "firebase/app";
+
+import { Quiz } from "./components/quiz";
 import {Login} from "./components/login";
 import {PrivateRoute} from "./components/routes";
 import {GenerateQuiz} from "./components/generate-quiz";
 import {Home} from "./components/home.js";
-import {getAuth, setPersistence, browserSessionPersistence, signInWithPopup, GoogleAuthProvider} from "firebase/auth";
 
 const firebaseConfig = require("./utils/firebase-config.json")
 const app = initializeApp(firebaseConfig)
 
 function AppContent() {
-    const auth = getAuth()
-    const provider = new GoogleAuthProvider()
-
     return (
         <Routes>
 
@@ -28,8 +26,6 @@ function AppContent() {
                     <Quiz/>
                 </PrivateRoute>}>
             </Route>
-
-            <Route path={"/login"} element={<Login/>}/>
 
             <Route path="/quiz" element={
                 <PrivateRoute>
@@ -41,6 +37,10 @@ function AppContent() {
                 <PrivateRoute>
                     <Home/>
                 </PrivateRoute>
+            }/>
+
+            <Route path={"/login"} element={
+                <Login/>
             }/>
 
             <Route path={"/"} element={

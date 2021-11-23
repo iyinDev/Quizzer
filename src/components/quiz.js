@@ -4,7 +4,32 @@ import {useParams} from "react-router-dom";
 import useCountDown from "react-countdown-hook";
 import {LinkToHome} from "./routes";
 
+import {getFirestore, collection, doc, setDoc, Timestamp} from "firebase/firestore"
+import {getAuth} from "firebase/auth";
+
 // Quiz helper classes and functions.
+
+function createQuizDoc(mcqData, score) {
+    let extracted = []
+    Object.keys(mcqData).map(mcq => {
+        console.log(mcqData[mcq])
+        extracted.push({
+            question: mcqData[mcq].question,
+            choices: mcqData[mcq].choices,
+            correctAnswer: mcqData[mcq].correctAnswer,
+            category: mcqData[mcq].category,
+            difficulty: mcqData[mcq].difficulty
+        })
+    })
+
+    const newDoc = {
+        data: extracted,
+        score: score,
+        createdAt: Timestamp.fromDate(new Date()),
+    }
+
+    return newDoc
+}
 
 /**
  * Decodes input from API.
@@ -53,17 +78,25 @@ class MultipleChoiceQuestionBucket {
     }
 }
 
-
 // Quiz components.
 
 /**
  * Displays on MultipleChoiceQuestionBucket.
  * @returns {JSX.Element}
  */
-function MultipleChoiceQuestion({ scre, mcq, usrAnswrs, indx }) {
+
+function MultipleChoiceQuestion({ scre, mcq, usrAnswrs, indx, qid, mcqData }) {
     const ref = useRef()
-    const [ currentChoice, setCurrentChoice ] = useState(null), curr = {currentChoice: currentChoice, setCurrentChoice: setCurrentChoice}
-    const [running, setRunning] = useState(false), rnning = {running: running, setRunning: setRunning}
+    const [ currentChoice, setCurrentChoice ] = useState(null),  // The current selected choice.
+        curr = {
+            currentChoice: currentChoice,
+            setCurrentChoice: setCurrentChoice
+        }
+    const [running, setRunning] = useState(false),  // The current run status of the Quiz.
+        rnning = {
+            running: running,
+            setRunning: setRunning
+        }
 
     return (
         <div>
@@ -71,7 +104,7 @@ function MultipleChoiceQuestion({ scre, mcq, usrAnswrs, indx }) {
                 <div id={"question-card"} className={"question-card"}>{mcq? mcq.question : ""}
                     <ChoiceEvaluator answer={mcq? mcq.correctAnswer : null} curr={curr} usrAnswrs={usrAnswrs} indx={indx} rnning={rnning} scre={scre}/>
                 </div>
-                <ProgressBar rnning={rnning}/>
+                <ProgressBar rnning={rnning} qid={qid} mcqData={mcqData} score={scre.score}/>
             </div>
             <div className={"choices"}>
                 <ChoiceMCQ mcq={mcq} choiceClass={"A"} curr={curr}/>
@@ -136,12 +169,12 @@ function ChoiceMCQ({ mcq, curr, choiceClass }) {
  * The progress bar at the bottom of the question card.
  * @returns {JSX.Element}
  */
-function ProgressBar({ rnning }) {
+function ProgressBar({ rnning, qid, mcqData, score }) {
     const ref = useRef()
 
     const { running, setRunning } = rnning
 
-    const initialTime = 1 * 60 * 1000
+    const initialTime = .2 * 60 * 1000
     const interval = 1000
     const [timeLeft, { start, reset }] = useCountDown(initialTime, interval)
 
@@ -156,6 +189,16 @@ function ProgressBar({ rnning }) {
         }, 200)
     }
 
+    function addQuizToUserHistory() {
+        const db = getFirestore()
+        const auth = getAuth(), uid = auth.currentUser.uid
+
+        const userHistory = doc(db, 'users', uid, 'quiz-history', qid)
+
+        const newDoc = createQuizDoc(mcqData, score)
+        setDoc(userHistory, newDoc)
+    }
+
     // Starts the timer on load.
     useEffect(() => {
         start()
@@ -167,6 +210,7 @@ function ProgressBar({ rnning }) {
         if (timeLeft === 0 && running) {
             console.log("Timer done.")
             setRunning(false)
+            addQuizToUserHistory()
             displayResults()
         } else if (timeLeft !== 0 && !running) {
             reset()
@@ -235,21 +279,29 @@ function ChoiceEvaluator({ indx, curr, answer, usrAnswrs, rnning, scre}) {
     /**
      * Compares the current choice to the question answer, and scores.
      */
+
+
     function choiceEvaluatorHandler() {
         let correct
+        // If the user has no choice currently selected.
         if (!currentChoice) {
             console.log("No answer selected.")
             correct = null
-        } else if (currentChoice.current.innerHTML === answer) {
+        }
+        // If the user's current choice is correct.
+        else if (currentChoice.current.innerHTML === answer) {
             console.log("Correct answer.")
             correct = true
             setUserAnswers([...userAnswers, true])
             setScore(score => score + 1)
-        } else {
+        }
+        // If the user's current choice is incorrect.
+        else {
             console.log("Incorrect answer.")
             correct = false
             setUserAnswers([...userAnswers, false])
         }
+        // If an answer was submitted, load the next question.
         if (correct != null) {
             nextQuestion()
         }
@@ -267,18 +319,28 @@ function ChoiceEvaluator({ indx, curr, answer, usrAnswrs, rnning, scre}) {
  * The Results Modal.
  * @returns {JSX.Element}
  */
-function Results({ usrAnswrs, index }) {
+function Results({ usrAnswrs, index, qid, mcqData, score }) {
     const ref = useRef()
     const [scoreMessage, setScoreMessage] = useState([])
 
     const { userAnswers } = usrAnswrs
     const { n } = index
 
+    function addQuizToPublic() {
+        const db = getFirestore()
+        const auth = getAuth(), uid = auth.currentUser.uid
+
+        const newPublicQuiz = doc(db, 'public-quizzes', qid)
+
+        const newDoc = createQuizDoc(mcqData, score)
+        newDoc['createdBy'] = uid
+        debugger
+        setDoc(newPublicQuiz, newDoc)
+    }
+
     // Displays scoreMessage.
     useEffect(() => {
-        let count = 0
-        userAnswers.forEach(answer => count += (answer === true? 1 : 0))
-        const fraction = count + "/" + n + "!"
+        const fraction = score + "/" + n + "!"
         setScoreMessage('YOU SCORED: ' + fraction)
     }, [userAnswers])
 
@@ -287,6 +349,7 @@ function Results({ usrAnswrs, index }) {
             <div className={"results-container"}>
                 <div className={"results"}>{scoreMessage}</div>
                 <LinkToHome/>
+                <button onClick={addQuizToPublic}>Example</button>
             </div>
         </div>
     )
@@ -301,7 +364,7 @@ export function Quiz() {
 
     const { get, response } = useFetch('https://opentdb.com')
 
-    const uid = useState(id)
+    const [qid] = useState(id)
     const [ questions, setQuestions ] = useState([])
     const [ userAnswers, setUserAnswers ] = useState([]), usrAnswrs = {userAnswers: userAnswers, setUserAnswers: setUserAnswers}
     const [ index, setIndex ] = useState(0), indx = {index: index, setIndex: setIndex, n: amount}
@@ -335,20 +398,13 @@ export function Quiz() {
         initializeQuiz()
     }, [])
 
-    // If userAnswers changes.
-    useEffect(() => {
-        if (userAnswers) {
-            console.log('User answers. -> ' + userAnswers)
-        }
-    }, [userAnswers])
-
     return (
             <div>
-                <Results usrAnswrs={usrAnswrs} index={indx}/>
+                <Results usrAnswrs={usrAnswrs} index={indx} qid={qid} mcqData={questions} score={score}/>
                 <div className={"quiz"}>
                     <Score scre={scre}/>
                     <span className={"logo"}>QUIZZER!</span>
-                    <MultipleChoiceQuestion mcq={questions[index]} usrAnswrs={usrAnswrs} indx={indx} scre={scre}/>
+                    <MultipleChoiceQuestion mcq={questions[index]} usrAnswrs={usrAnswrs} indx={indx} scre={scre} qid={qid} mcqData={questions}/>
                 </div>
             </div>
     )

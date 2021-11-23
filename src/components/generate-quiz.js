@@ -51,7 +51,7 @@ function DropdownMenu({ label, content, formSetter }) {
         <div>
             <button onClick={dropdownMenuHandler} className={"dropbtn"}>▼</button>
             <div id={label.toLowerCase()} className={"dropdown-content"}>
-                {content && Object.keys(content).map((key, index) => <DropdownItem value={content[key]} formSetter={formSetter}/>)}
+                {content && Object.keys(content).map((key, index) => <DropdownItem key={key} value={content[key]} formSetter={formSetter}/>)}
             </div>
         </div>
     )
@@ -102,28 +102,36 @@ function SubmitQuizFormButton({ categories }) {
     /**
      * Submits quiz configuration and navigate to generated quiz page.
      */
-    function submitForm() {
-        const inputs = {amount: document.getElementById("Amount"), category: document.getElementById("Category"), difficulty: document.getElementById("Difficulty"), type: document.getElementById("Type")}
 
+    function submitForm() {
+        // Gets references of all form input divs.
+        const inputs = {
+            amount: document.getElementById("Amount"),
+            category: document.getElementById("Category"),
+            difficulty: document.getElementById("Difficulty"),
+            type: document.getElementById("Type")
+        }
         let form = {}
+        form['id'] = generateQuizId()
+        // Gets value from each input div.
         for (let i in inputs) {
             if (i === "category") {
-                form[i] = getCategoryId(inputs[i].innerHTML)
+                // Gets id code of a category text value to make valid API call.
+                form[i] = (inputs[i].innerHTML !== "")? getCategoryId(inputs[i].innerHTML) : ""
             } else {
-                let elem = inputs[i]
                 form[i] = inputs[i].innerHTML
             }
         }
 
-        form['id'] = generateQuizId()
-        console.log("Form submitted. -> "
-            + "amount=" + form.amount
-            + " category=" + form.category
-            + " difficulty=" + form.difficulty
-            + " type=" + form.type
-            + " id=" + form.id
-        )
-        navigate('/quiz/' + form.id + "/" + form.amount + "/" + form.category + "/" + form.difficulty + "/" + form.type)
+        const {id, amount, category, difficulty, type} = form
+        const quizParams = [
+            ((amount === '')? '10' : amount),
+            ((category === '')? '9' : category),
+            ((difficulty === '')? 'easy' : difficulty),
+            ((type === '')? 'multiple' : type)] // form values are filtered here
+        const quizRoute = '/quiz/' + id + '/' + quizParams[0] + '/' + quizParams[1] + '/' + quizParams[2] + '/' + quizParams[3]
+        navigate(quizRoute)
+        console.log("Quiz route. -> " + quizRoute)
     }
 
     return (
@@ -131,6 +139,9 @@ function SubmitQuizFormButton({ categories }) {
     )
 }
 
+function addQuizToPublic() {
+
+}
 
 // Page component.
 
@@ -143,20 +154,13 @@ export function GenerateQuiz() {
     // The available amount options.
     let amountsKeys = [], amountsObj = {}
     for (let i = 1; i < 11; i++) {amountsKeys.push(i.toString())}
-    amountsKeys.forEach(key => amountsObj[key] = key)
-    const [ amounts, setAmounts ] = useState(amountsObj)
+    const [ amounts, setAmounts ] = useState(amountsKeys)
 
     // The available difficulty options.
-    const [ difficulties ] = useState({
-        easy: 'easy',
-        medium: 'medium',
-        hard: 'hard'
-    })
+    const [ difficulties ] = useState(['easy', 'medium', 'hard'])
 
     // The available type options.
-    const [ types ] = useState({
-        multiple: 'multiple'
-    })
+    const [ types ] = useState(['multiple'])
 
     // Fetches all current available categories from the API.
     const { get, response } = useFetch('https://opentdb.com')
