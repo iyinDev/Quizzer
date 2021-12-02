@@ -8,14 +8,10 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 
 import { initializeApp } from "firebase/app";
 
-import { Quiz } from "./components/quiz";
+import {PreloadedQuiz, Quiz} from "./components/quiz";
 import {Login} from "./components/login";
 import {PrivateRoute} from "./components/routes";
-import {GenerateQuiz} from "./components/generate-quiz";
 import {Home} from "./components/home.js";
-
-const firebaseConfig = require("./utils/firebase-config.json")
-const app = initializeApp(firebaseConfig)
 
 function AppContent() {
     return (
@@ -27,9 +23,14 @@ function AppContent() {
                 </PrivateRoute>}>
             </Route>
 
+            <Route path="/quiz/:qid" element={
+                <PrivateRoute>
+                    <PreloadedQuiz/>
+                </PrivateRoute>}>
+            </Route>
+
             <Route path="/quiz" element={
                 <PrivateRoute>
-                    <GenerateQuiz/>
                 </PrivateRoute>
             }/>
 

@@ -18,12 +18,13 @@ export function PrivateRoute({ children }) {
  * A button that links the user to a page.
  * @param label The label of the button.
  * @param to The directory of the navigation destination.
+ * @param modifier
  * @returns {JSX.Element}
  */
-export function RouteLink({ label, to }) {
+export function RouteLink({ label, to, modifier }) {
     return (
         <Link to={to}>
-            <button className={"route-switch"} >{label}</button>
+            <button className={"route-switch" + (modifier? modifier : "")} >{label}</button>
         </Link>
     )
 }
@@ -32,10 +33,8 @@ export function RouteLink({ label, to }) {
  * A button that links to the Home component.
  * @returns {JSX.Element}
  */
-export function LinkToHome() {
-    const auth = getAuth()
-
+export function LinkToHome({ modifier }) {
     return (
-        <RouteLink to={"/home"} label={"Home"}/>
+        <RouteLink to={"/home"} label={"Home"} modifier={modifier}/>
     )
 }

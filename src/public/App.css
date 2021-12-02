@@ -6,6 +6,12 @@
   --tertiary: #40B0DF;
   --quaternary: #FFD53D;
   --pentary: #48cb4e;
+
+  --large-bt-width: 15vw;
+  --large-bt-height: 15vh;
+
+  --small-bt-w: 10vw;
+  --small-bt-h: 15vh;
 }
 
 .App {
@@ -15,6 +21,8 @@
 html, body {
   height: 100vh;
   background: var(--secondary);
+
+  overflow: hidden;
 }
 
 * {
@@ -35,8 +43,8 @@ button {
 
 .route-switch {
   height: 10vh;
-  width: 100%;
-  margin: 3vh auto;
+  width: 25vw;
+  margin: 3vh auto 0;
   box-sizing: border-box;
 
   background: var(--pentary);

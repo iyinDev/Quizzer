@@ -135,7 +135,7 @@ function SubmitQuizFormButton({ categories }) {
     }
 
     return (
-        <button className={"submit-quiz-form"} type={"submit"} value={"Submit"} onClick={submitForm}>Submit</button>
+        <button className={"rout"} type={"submit"} value={"Submit"} onClick={submitForm}>Submit</button>
     )
 }
 
@@ -145,64 +145,3 @@ function addQuizToPublic() {
 
 // Page component.
 
-/**
- * The GenerateQuiz component.
- * @returns {JSX.Element}
- */
-export function GenerateQuiz() {
-
-    // The available amount options.
-    let amountsKeys = [], amountsObj = {}
-    for (let i = 1; i < 11; i++) {amountsKeys.push(i.toString())}
-    const [ amounts, setAmounts ] = useState(amountsKeys)
-
-    // The available difficulty options.
-    const [ difficulties ] = useState(['easy', 'medium', 'hard'])
-
-    // The available type options.
-    const [ types ] = useState(['multiple'])
-
-    // Fetches all current available categories from the API.
-    const { get, response } = useFetch('https://opentdb.com')
-    const [ categories, setCategories ] = useState(null)
-    async function fetchAvailableCategories() {
-        const skeleton = '/api_category.php?'
-        const query = skeleton
-        const qR = await get(query)
-
-        let categories = []
-        if (response.ok) {
-            qR.trivia_categories.forEach(category => {categories.push(category)})
-            let categoriesObj = {}
-            for (let i = 0; i < categories.length; i++) {
-                categoriesObj[categories[i].id] = categories[i].name
-            }
-            setCategories(categoriesObj)
-        }
-    }
-
-    // Grabs all available categories on load.
-    useEffect(() => {fetchAvailableCategories()}, [])
-
-    // When all categories have loaded.
-    useEffect(() => {
-        if (categories) {
-            console.log("Loaded categories.")
-        }
-    }, [categories])
-
-    return (
-        <div className={"generate-quiz-background"}>
-            <div>
-                <SubmitQuizFormButton categories={categories}/>
-                <LinkToHome/>
-            </div>
-            <div className={"c"}>
-                <QuizParameterForm label={"Amount"} content={amounts? amounts : []}/>
-                <QuizParameterForm label={"Category"} content={categories? categories : []}/>
-                <QuizParameterForm label={"Difficulty"} content={difficulties? difficulties : []}/>
-                <QuizParameterForm label={"Type"} content={types? types : []}/>
-            </div>
-        </div>
-    )
-}

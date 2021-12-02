@@ -11,12 +11,20 @@
     animation-name: slideFromTop;
     animation-duration: 0.8s;
 }
+
+.full {
+    width: 100%;
+    font-size: 2vw;
+}
+
 .results-container {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100%;
     flex-direction: column;
+
+    margin: 4vh auto 0;
 }
 .results {
     font-size: 9vw;
@@ -48,6 +56,23 @@
 
     z-index: 1;
 }
+
+.logo-user {
+    position: absolute;
+
+    height: 7.5vh;
+    width: 100vmax;
+    margin: 3vh;
+
+    z-index: 1;
+
+    font-size: 2vw;
+    letter-spacing: 0.05vw;
+    font-weight: 900;
+    font-family: 'Roboto Slab', serif;
+    color: var(--primary);
+}
+
 .score {
     background: var(--secondary);
     top: 2vh;
@@ -147,3 +172,91 @@
 .current {
     box-shadow: rgba(0, 0, 0, 0.4) 0 .2rem .4rem, rgba(0, 0, 0, 0.3) 0px .7rem 1.3rem -.3rem, rgba(0, 0, 0, 0.2) 0px -.3rem 0px inset;
 }
+
+
+.share:disabled {
+    background: indianred;
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.report{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 2vmax;
+
+    background: #fad44f;
+    padding: 3vmax;
+}
+
+.report-buttons {
+    margin: 2vh auto;
+    padding: 2vmax;
+    background: #fad44f;
+    display: flex;
+    flex-direction: column;
+    gap: 3vh;
+}
+
+.report-bt {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 25vw;
+    height: 10vh;
+
+    box-sizing: border-box;
+    background: var(--pentary);
+
+    font-size: 3.5vmax;
+    font-weight: 900;
+    border: none;
+}
+
+.bubble,
+    .correct,
+    .incorrect,
+    .total {
+        margin: 0 auto;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        width: 12.5vmax;
+        height: 12.5vmax;
+
+        border: solid 2vmax;
+        border-radius: 50%;
+
+        text-align: center;
+        font-size: 8vmax;
+        font-family: var(--quizzer-font);
+    }
+
+    .correct {
+        background: var(--pentary);
+        border: #359539 solid 2vmax;
+    }
+
+    .incorrect {
+        background: indianred;
+        border: #974343 solid 2vmax;
+    }
+
+    .total {
+        background: var(--secondary);
+        border: #004d86 solid 2vmax;
+    }
+
+.bubble-label {
+    width: fit-content;
+
+    font-size: 2.5vw;
+    text-align: center;
+    margin: 0 auto;
+    font-weight: 900;
+    font-family: var(--quizzer-font);
+}
+

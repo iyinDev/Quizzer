@@ -3,17 +3,25 @@
     flex-direction: column;
 }
 
+div {
+    box-sizing: border-box;
+}
+
+button {
+    background: var(--pentary);
+ }
+
 .vertical,
 .c{
-    margin: 2vmax;
     gap: 1vmin;
 }
 
 .redirect-buttons,
     /*.submit-quiz-form,*/
-    .logout,
+    /*.logout,*/
     .play {
         height: 20vh;
+        width: 100%;
         box-sizing: border-box;
 
         background: var(--pentary);
@@ -37,6 +45,25 @@
     align-items: center;
 }
 
+.home-labels,
+    .leaderboard-label,
+    .create-label,
+    .challenge-label,
+    .public-label,
+    .logo-label {
+        text-align: center;
+
+        font-size: 2.5vw;
+        font-weight: 900;
+
+        padding: 2vh;
+        margin-top: 2vh;
+    }
+
+    .leaderboard-label {
+        font-size: 2vw;
+    }
+
 .home-buttons {
     display: flex;
     flex-direction: column;
@@ -56,15 +83,234 @@
 
     position: absolute;
     top: 3vh;
-    margin: 3vh auto;
+    left: 3vh;
 
-    width: 90%;
-    height: 25vh;
+    width: 10%;
 
-    font-size: 10vmax;
+    font-size: 2.25vmax;
     font-weight: 900;
     font-family: var(--quizzer-font);
     background: var(--quaternary);
-    letter-spacing: 1vmax;
     text-align: center;
+    padding: 1vmax;
 }
+
+.home {
+    display: grid;
+    grid-template-columns: 20% 25% auto;
+
+    width: 100vw;
+    height: 100vh;
+    padding: 1.25vw;
+    box-sizing: border-box;
+
+    grid-gap: 2vw;
+}
+
+.cards,
+    .panel,
+    .create {
+        border: 1vmin solid;
+    }
+
+    .public-card {
+        background: var(--primary);
+    }
+
+    .challenge-card {
+        background: var(--quaternary);
+    }
+
+    .create {
+        background: var(--tertiary);
+    }
+
+    .panel {
+        background: var(--tertiary);
+    }
+
+    .create {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .public {
+        display: grid;
+        grid-template-rows: repeat(2, 1fr);
+        gap: 2vh;
+    }
+
+    .public-card, .challenge-card {
+        border: 1vmin solid;
+        padding: 0 2vw;
+    }
+
+
+    .public-quizzes-background, .challenge-quizzes-background {
+        background: white;
+        height: 10%;
+
+        list-style-type: none;
+
+        margin: 1vmax;
+        overflow: hidden;
+        overflow-y: scroll;
+    }
+
+    .public-quiz-list {
+        text-align: center;
+        padding: 0;
+        margin: 0;
+
+        height: 30vh;
+        overflow: auto;
+    }
+
+    .public-quiz, .challenge-quiz {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+
+        position: relative;
+
+        width: 100%;
+        height: 10vh;
+        background: red;
+
+        border: 1vmin;
+        border-radius: 1.5%;
+
+        font-size: 2vw;
+        font-weight: 900;
+        text-align: left;
+
+        margin: 1vw;
+    }
+
+    .timestamp, .category-stamp {
+        position: absolute;
+        right: 4%;
+
+        font-size: 0.75vw;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .timestamp {
+        bottom: 10%;
+    }
+
+    .category-stamp {
+        top: 10%;
+    }
+
+    .play-quiz {
+        width: 5vw;
+        height: 10vh;
+
+        border: 0;
+        box-sizing: border-box;
+
+        margin-right: 1vw;
+    }
+
+    .forms {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        justify-content: space-between;
+
+        gap: 3vh;
+
+        margin-top: 2vh;
+    }
+
+    .submit-quiz-form {
+        height: var(--large-bt-height);
+        width: var(--large-bt-width);
+        padding: 1vw;
+        box-sizing: border-box;
+
+        font-weight: 800;
+        text-transform: uppercase;
+        font-family: var(--quizzer-font);
+        font-size: 3vw;
+
+        margin: 3vmax;
+
+        border: 0;
+    }
+
+    .panel-header {
+        font-size: 2.5vmax;
+        font-weight: 900;
+
+        text-align: center;
+
+        padding: 1vmin;
+        margin-top: 0.75vmax;
+    }
+    .profile {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        gap: 1vmax;
+        padding: 1vmin;
+    }
+    .profile-logo-c {
+        padding: 0.1vmax;
+    }
+    .profile-logo {
+        background: var(--tertiary);
+
+        width: 6.5vmax;
+        height: 6.5vmax;
+
+        box-sizing: unset;
+        border: 1vmin solid var(--secondary);
+        border-radius: 50%;
+
+        color: var(--primary);
+        font-weight: 1000;
+        font-size: 5vmax;
+        font-family: var(--quizzer-font);
+
+        text-align: center;
+    }
+    .profile-user {
+        width: 80%;
+        margin-bottom: 0.5vh;
+
+        text-align: center;
+
+        font-weight: 700;
+        font-family: var(--quizzer-font);
+        font-size: 3vmin;
+
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .settings,
+    .logout {
+        width: 80%;
+        height: 7.5vh;
+
+        font-family: var(--quizzer-font);
+        font-size: 1.5vw;
+        font-weight: 900;
+        text-align: center;
+
+        border: none;
+
+    }
+    .leaderboard-background {
+        height: 25vh;
+        background: white;
+
+        padding: 1vmin;
+        margin: 0;
+    }
+

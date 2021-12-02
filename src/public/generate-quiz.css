@@ -27,10 +27,10 @@
     color: white;
     border: none;
     cursor: pointer;
-    height: 7.5vh;
-    width: 5vw;
+    height: 5vh;
+    width: 2.5vw;
 
-    font-size: 3.5vmax;
+    font-size: 1.5vmax;
 }
 
 /* Dropdown button on hover & focus */
@@ -75,18 +75,19 @@
 .difficulty,
 .type {
     box-sizing: border-box;
-    height: 7.5vh;
-    width: 40vw;
+    height: 5vh;
+    width: 17.5vw;
     padding: .75vw;
 
-    font-size: 3vmin;
-    font-weight: 600;
-    letter-spacing: 0.2vmin;
-    overflow: auto;
+    font-size: 2vmin;
+    font-weight: 800;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+    text-transform: uppercase;
+
 
     background: var(--quaternary);
 }
@@ -96,26 +97,15 @@
 .category-label,
 .difficulty-label,
 .type-label {
-    font-size: 2.5vmax;
+    font-size: 2vmax;
     font-weight: 800;
     text-transform: uppercase;
 
     margin: 0 0 .5vh;
 }
 
-
-.submit-quiz-form {
-    height: 10vh;
-    width: 100%;
-    margin: 1vh auto;
-    box-sizing: border-box;
-
-    background: var(--pentary);
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.3vmax;
-    font-family: var(--quizzer-font);
-    font-size: 3vmax;
-
-    border: 0;
+.option-buttons {
+    margin: 0 4vw;
+    flex: 0.5;
 }
+
