@@ -24,6 +24,8 @@
 
 .dropbtn {
     background-color: var(--secondary);
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -4px 0px inset;
+
     color: white;
     border: none;
     cursor: pointer;
@@ -69,7 +71,7 @@
 /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
 .show {display:block;}
 
-.quiz-config-input,
+.config-input,
 .amount,
 .category,
 .difficulty,
@@ -88,8 +90,9 @@
     text-align: left;
     text-transform: uppercase;
 
-
     background: var(--quaternary);
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -4px 0px inset;
+
 }
 
 .quiz-config-label,

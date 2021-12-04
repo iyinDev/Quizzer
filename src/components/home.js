@@ -6,44 +6,73 @@ import {useCollectionData} from "react-firebase-hooks/firestore";
 import {collection, query, getFirestore, orderBy, limit} from "firebase/firestore";
 import {initializeApp} from "firebase/app";
 import {MultipleChoiceQuestionBucket} from "./quiz";
+import {useModal} from "react-modal-hook";
+import {Modal} from "../utils/modal";
+import {LoginForm} from "../utils/form";
 
 
 const firebaseConfig = require("../utils/firebase-config.json")
 const app = initializeApp(firebaseConfig)
 const db = getFirestore(app)
 
-function Leaderboard() {
-    const leaderboard = collection(db, "leaderboard")
-    const [values, loading, error] = useCollectionData(leaderboard)
 
-    useEffect(() => {
-        if (!loading) {
-            console.log(values)
-        }
-    }, [values])
-
+function Leader({ value, index }) {
     return (
-        <div>
-            <div className={"leaderboard-label"}>LEADERBOARDS</div>
-            <ul className={"leaderboard-background"}>
-                {values && values.map(value => <li>{value.user} - {value.score}</li>)}
-            </ul>
+        <div className={"leader card " + index}>
+            <div className={"leader-pos"}>{parseInt(index[1]) + 1}.</div>
+            <div className={"leader-name"}>{value.user}</div>
+            <div className={"leader-score"}>{value.score}</div>
         </div>
     )
 }
 
-function PublicQuizLink({ value, currentState }) {
-    const ref = useRef()
+function Leaderboard() {
+    const leaderboard = query(collection(db, "leaderboard"), orderBy("score", "desc"), limit(5))
+    const [values, loading, error] = useCollectionData(leaderboard)
 
-    const [mcq, setMCQ] = useState(null)
-    const [timestamp, setTimestamp] = useState(new Date(value.createdAt.seconds * 1000))
-
-    function handler() {
-        currentState[1](ref)
+    function Leaders() {
+        return (
+            <div>
+                <Leader value={values[0]} index={"l" + 0}/>
+                <Leader value={values[1]} index={"l" + 1}/>
+                <Leader value={values[2]} index={"l" + 2}/>
+                <Leader value={values[3]} index={"l" + 3}/>
+                <Leader value={values[4]} index={"l" + 4}/>
+            </div>
+        )
     }
 
     return (
-        <div className={"public-quiz"} onClick={handler}>
+        <div>
+            <div className={"leaderboard-label"}>LEADERBOARD</div>
+            <div className={"leaderboard-background"}>
+                {values? <Leaders/> : <div/>}
+            </div>
+        </div>
+    )
+}
+
+function PublicQuizLink({ value, currentPublicQuiz }) {
+    const ref = useRef()
+    const [current, setCurrent] = currentPublicQuiz
+
+    const [timestamp, setTimestamp] = useState(new Date(value.createdAt.seconds * 1000))
+
+    function handler() {
+        setCurrent(ref)
+    }
+
+    useEffect(() => {
+        if (current === ref) {
+            ref.current.disabled = "true"
+            ref.current.style.background = "var(--pentary)"
+        } else {
+            ref.current.style.background = "#FFD53D"
+        }
+    }, [current])
+
+    return (
+        <div ref={ref} id={value.qid} className={"public-quiz"} onClick={handler}>
 
             {value.createdBy.toUpperCase()} - {value.score}
             <div className={"timestamp"}>{timestamp.toDateString()}</div>
@@ -52,82 +81,158 @@ function PublicQuizLink({ value, currentState }) {
     )
 }
 
+function ChallengeQuizLink({ value, currentChallengeQuiz }) {
+    const ref = useRef()
+    const [current, setCurrent] = currentChallengeQuiz
+
+    const [timestamp, setTimestamp] = useState(new Date(value.createdAt.seconds * 1000))
+
+    function handler() {
+        setCurrent(ref)
+    }
+
+    useEffect(() => {
+        if (current === ref) {
+            ref.current.disabled = "true"
+            ref.current.style.background = "var(--pentary)"
+        } else {
+            ref.current.style.background = "#FFD53D"
+        }
+    }, [current])
+
+    return (
+        <div ref={ref} id={value.qid} className={"public-quiz"} onClick={handler}>
+            {value.title}
+            <div className={"timestamp"}>{timestamp.toDateString()}</div>
+        </div>
+    )
+}
+
 function PublicQuizzes() {
     const navigate = useNavigate()
-    const currentState = useState(null)
+    const currentPublicQuiz = useState(null), [current, setCurrent] = currentPublicQuiz
 
     const publicQuizzes = query(collection(db, "public-quizzes"), orderBy('score', 'desc'), limit(5))
     const [values, loading, error] = useCollectionData(publicQuizzes)
 
+    const [quizzes, setQuizzes] = useState(null)
+
     useEffect(() => {
-        
-    }, [])
+        if (values) {
+            let allQuizzes = {}
+            values.forEach(value => {
+                allQuizzes[value.qid] = value
+            })
+            setQuizzes(allQuizzes)
+        }
+    }, [values])
 
     function loadQuiz() {
+        if (current) {
+            const value = quizzes[current.current.id]
+            const quiz = []
+            value.data.forEach(q => {
 
-        const quiz = []
-        value.data.forEach(q => {
-
-            const incorrect = []
-            for (let i in q.choices) {
-                if (q.choices[i] !== q.correctAnswer) {
-                    incorrect.push(q.choices[i])
+                const incorrect = []
+                for (let i in q.choices) {
+                    if (q.choices[i] !== q.correctAnswer) {
+                        incorrect.push(q.choices[i])
+                    }
                 }
-            }
 
-            const mcqData = {
-                question: q.question,
-                category: q.category,
-                difficulty: q.difficulty,
-                correct_answer: q.correctAnswer,
-                incorrect_answers: incorrect
-            }
+                const mcqData = {
+                    question: q.question,
+                    category: q.category,
+                    difficulty: q.difficulty,
+                    correct_answer: q.correctAnswer,
+                    incorrect_answers: incorrect
+                }
 
-            quiz.push(mcqData)
-        })
-
-        navigate("/quiz/" + value.qid, { state: quiz })
+                quiz.push(mcqData)
+            })
+            navigate("/quiz/" + value.qid, { state: quiz })
+        }
     }
 
     return (
         <div className={"public-card"}>
             <div className={"public-label"}>PUBLIC QUIZZES!</div>
-            <button className={"play-quiz"} onClick={loadQuiz}>Play</button>
-            <div>
-                <ul className={"public-quiz-list"}>
-                    {values && values.map(value => <PublicQuizLink value={value} currentState={currentState}/>)}
-                </ul>
+            <button className={"play-quiz"} onClick={loadQuiz}/>
+            <div className={"public-quiz-list"}>
+                {values && values.map(value => <PublicQuizLink value={value} currentPublicQuiz={currentPublicQuiz}/>)}
             </div>
-
         </div>
     )
 }
 
 function ChallengeQuizzes() {
+    const currentChallengeQuiz = useState(null), [current, setCurrent] = currentChallengeQuiz
+    const navigate = useNavigate()
+
     const publicQuizzes = query(collection(db, "challenge-quizzes"))
     const [values, loading, error] = useCollectionData(publicQuizzes)
+
+    const [quizzes, setQuizzes] = useState(null)
+
+    useEffect(() => {
+        if (values) {
+            let allQuizzes = {}
+            values.forEach(value => {
+                allQuizzes[value.qid] = value
+            })
+            setQuizzes(allQuizzes)
+        }
+    }, [values])
+
+    function loadQuiz() {
+        if (current) {
+            const value = quizzes[current.current.id]
+            const quiz = []
+            value.data.forEach(q => {
+
+                const incorrect = []
+                for (let i in q.choices) {
+                    if (q.choices[i] !== q.correctAnswer) {
+                        incorrect.push(q.choices[i])
+                    }
+                }
+
+                const mcqData = {
+                    question: q.question,
+                    category: q.category,
+                    difficulty: q.difficulty,
+                    correct_answer: q.correctAnswer,
+                    incorrect_answers: incorrect
+                }
+
+                quiz.push(mcqData)
+            })
+            navigate("/quiz/" + value.qid, { state: quiz })
+        }
+    }
 
     return (
         <div className={"challenge-card"}>
             <div className={"challenge-label"}>CHALLENGE QUIZZES!</div>
-            <ul className={"challenge-quizzes-background"}>
-                {values && values.map(value => <li>{value.title} - {value.createdAt.seconds}</li>)}
-            </ul>
+            <button className={"play-quiz"} onClick={loadQuiz}/>
+            <div className={"challenge-quiz-list"}>
+                {values && values.map(value => <ChallengeQuizLink value={value} currentChallengeQuiz={currentChallengeQuiz}/>)}
+            </div>
         </div>
     )
 }
 
-function Profile() {
+function Profile({ showModal }) {
     const auth = getAuth()
 
     return (
         <div className={"profile"}>
             <div className={"profile-logo-c"}>
-                <div className={"profile-logo"}>{auth.currentUser.displayName[0]}</div>
+                <div className={"profile-logo"}>{auth.currentUser.displayName? auth.currentUser.displayName[0] : ""}</div>
             </div>
-            <div className={"profile-user"}>Hi, {auth.currentUser.displayName.split(" ")[0]}!</div>
+            <div className={"profile-user"}>Hi, {auth.currentUser.displayName? auth.currentUser.displayName.split(" ")[0] : ""}!</div>
             <LogoutButton/>
-            <button className={"settings"}>SETTINGS</button>
+            <button onClick={showModal} className={"card settings"}>SETTINGS</button>
         </div>
     )
 }
@@ -159,7 +264,7 @@ function LogoutButton() {
     }
 
     return (
-        <button className={"logout"} onClick={logoutHandler}>LOGOUT</button>
+        <button className={"card logout"} onClick={logoutHandler}>LOGOUT</button>
     )
 }
 
@@ -304,12 +409,12 @@ function SubmitQuizFormButton({ categories }) {
             ((difficulty === '')? 'easy' : difficulty),
             ((type === '')? 'multiple' : type)] // form values are filtered here
         const quizRoute = '/quiz/' + id + '/' + quizParams[0] + '/' + quizParams[1] + '/' + quizParams[2] + '/' + quizParams[3]
-        navigate(quizRoute)
+        navigate(quizRoute, {state: {initialTime: ((amount === '')? 100000 : amount * 10000)}})
         console.log("Quiz route. -> " + quizRoute)
     }
 
     return (
-        <button className={"submit-quiz-form"} type={"submit"} value={"Submit"} onClick={submitForm}>Submit</button>
+        <button className={"card submit-quiz-form"} type={"submit"} value={"Submit"} onClick={submitForm}>Submit</button>
     )
 }
 
@@ -318,10 +423,9 @@ function SubmitQuizFormButton({ categories }) {
  * @returns {JSX.Element}
  */
 export function Home() {
-
     // The available amount options.
     let amountsKeys = [], amountsObj = {}
-    for (let i = 10; i > 0; i--) {amountsKeys.push(i.toString())}
+    for (let i = 40; i > 0; i--) {amountsKeys.push(i.toString())}
     const [ amounts, setAmounts ] = useState(amountsKeys)
 
     // The available difficulty options.

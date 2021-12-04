@@ -4,13 +4,13 @@ import {useLocation, useNavigate, useParams} from "react-router-dom";
 import useCountDown from "react-countdown-hook";
 import {LinkToHome} from "./routes";
 
-import {getFirestore, collection, doc, setDoc, Timestamp} from "firebase/firestore"
+import {getFirestore, collection, doc, setDoc, addDoc, Timestamp} from "firebase/firestore"
 import {getAuth} from "firebase/auth";
 import {useAuthState} from "react-firebase-hooks/auth";
 
 // Quiz helper classes and functions.
 
-function createQuizDoc(mcqData, score, qid) {
+function createQuizDoc(mcqData, score, qid, title = null) {
     let extracted = []
     Object.keys(mcqData).map(mcq => {
         extracted.push({
@@ -23,6 +23,7 @@ function createQuizDoc(mcqData, score, qid) {
     })
 
     const newDoc = {
+        title: title? title : qid,
         qid: qid,
         data: extracted,
         score: score,
@@ -85,8 +86,9 @@ export class MultipleChoiceQuestionBucket {
  * @returns {JSX.Element}
  */
 
-function MultipleChoiceQuestion({ scre, mcq, usrAnswrs, indx, qid, mcqData }) {
+function MultipleChoiceQuestion({ scre, mcq, usrAnswrs, indx, qid, mcqData, time, initialTime }) {
     const ref = useRef()
+
     const [ currentChoice, setCurrentChoice ] = useState(null),  // The current selected choice.
         curr = {
             currentChoice: currentChoice,
@@ -104,7 +106,7 @@ function MultipleChoiceQuestion({ scre, mcq, usrAnswrs, indx, qid, mcqData }) {
                 <div id={"question-card"} className={"question-card"}>{mcq? mcq.question : ""}
                     <ChoiceEvaluator answer={mcq? mcq.correctAnswer : null} curr={curr} usrAnswrs={usrAnswrs} indx={indx} rnning={rnning} scre={scre}/>
                 </div>
-                <ProgressBar rnning={rnning} qid={qid} mcqData={mcqData} score={scre.score}/>
+                <ProgressBar rnning={rnning} qid={qid} mcqData={mcqData} time={time} score={scre.score}/>
             </div>
             <div className={"choices"}>
                 <ChoiceMCQ mcq={mcq} choiceClass={"A"} curr={curr}/>
@@ -169,21 +171,20 @@ function ChoiceMCQ({ mcq, curr, choiceClass }) {
  * The progress bar at the bottom of the question card.
  * @returns {JSX.Element}
  */
-function ProgressBar({ rnning, qid, mcqData, score }) {
+function ProgressBar({ rnning, qid, mcqData, score, n, time, initialTime }) {
     const ref = useRef()
     const auth = getAuth(), [user] = useAuthState(auth), uid = user.uid, email = user.email, displayName = user.displayName
+
     const userMetadata = {
         email: email,
         displayName: displayName
     }
     const db = getFirestore()
 
-
     const { running, setRunning } = rnning
 
-    const initialTime = .2 * 60 * 1000
-    const interval = 1000
-    const [timeLeft, { start, reset }] = useCountDown(initialTime, interval)
+    const { state } = useLocation()
+    const [timeLeft, { start, reset }] = useCountDown(state.initialTime, 1000)
 
     /**
      * Display the results modal.
@@ -195,8 +196,6 @@ function ProgressBar({ rnning, qid, mcqData, score }) {
             document.getElementById('results').style.display = "block"
         }, 200)
     }
-
-
 
     function addQuizToUserHistory() {
         const userRef = doc(db, 'users', uid)
@@ -210,10 +209,15 @@ function ProgressBar({ rnning, qid, mcqData, score }) {
         setDoc(userHistory, newDoc).then(() => {
             console.log("Document set at " + userHistory.path)
         })
+
+        const leaderboard = collection(db, 'leaderboard')
+        addDoc(leaderboard, {score: score, user: auth.currentUser.displayName}).then(() => {
+            console.log("Document set at " + leaderboard.path)
+        })
     }
 
-    // Starts the timer on load.
     useEffect(() => {
+        console.log(timeLeft)
         start()
         setRunning(true)
     }, [])
@@ -229,8 +233,7 @@ function ProgressBar({ rnning, qid, mcqData, score }) {
             reset()
             displayResults()
         } else {
-            ref.current.style.width = ((timeLeft / initialTime) * 100) + "%"
-            ref.current.style.width = ((timeLeft / initialTime) * 100) + "%"
+            ref.current.style.width = ((timeLeft / state.initialTime) * 100) + "%"
         }
 
     }, [timeLeft, running])
@@ -359,6 +362,29 @@ function Share({qid, mcqData, score}) {
     )
 }
 
+function AddToChallengeQuizzes({qid, mcqData, score}) {
+    const ref = useRef()
+
+    function shareQuiz() {
+        const title = prompt("Enter the title", "")
+        const db = getFirestore()
+        const auth = getAuth(), user = auth.currentUser.displayName
+
+        const newPublicQuiz = doc(db, 'challenge-quizzes', qid)
+
+        const newDoc = createQuizDoc(mcqData, score, qid, title)
+        newDoc['createdBy'] = user
+        setDoc(newPublicQuiz, newDoc)
+        console.log("Document set at " + newPublicQuiz.path + ".")
+
+        ref.current.disabled = true
+    }
+
+    return (
+        <button ref={ref} className={"share report-bt"} onClick={shareQuiz}>CHALLENGE</button>
+    )
+}
+
 
 /**
  * The Results Modal.
@@ -367,7 +393,6 @@ function Share({qid, mcqData, score}) {
 function Results({ usrAnswrs, index, qid, mcqData, score }) {
     const ref = useRef()
     const auth = getAuth()
-    const [scoreMessage, setScoreMessage] = useState([])
     const navigate = useNavigate()
 
     const [finalScore, setFinalScore] = useState(null), [incorrect, setIncorrect] = useState(null), [total, setTotal] = useState(null)
@@ -394,6 +419,7 @@ function Results({ usrAnswrs, index, qid, mcqData, score }) {
                 </div>
                 <div className={"report-buttons"}>
                     <Share qid={qid} mcqData={mcqData} score={score}/>
+                    <AddToChallengeQuizzes qid={qid} mcqData={mcqData} score={score}/>
                     <button className={"report-bt"} onClick={() => {
                         navigate("/home")
                     }}>HOME</button>
@@ -413,8 +439,12 @@ export function Quiz() {
 
     const { get, response } = useFetch('https://opentdb.com')
 
+    const [initialTime, setInitialTime] = useState(null)
+    const time = useCountDown(initialTime, 1000), [timeLeft, { start, pause, resume, reset}] = time
+
     const [qid] = useState(id)
     const [ questions, setQuestions ] = useState([])
+    const [quizTime, setQuizTime] = useState(null)
     const [ userAnswers, setUserAnswers ] = useState([]), usrAnswrs = {userAnswers: userAnswers, setUserAnswers: setUserAnswers}
     const [ index, setIndex ] = useState(0), indx = {index: index, setIndex: setIndex, n: amount}
     const [ score, setScore ] = useState(0), scre = {score: score, setScore: setScore}
@@ -439,7 +469,9 @@ export function Quiz() {
                 responseQuestions.push(mcq)
             })
             setQuestions(responseQuestions)
+            setInitialTime(qR.results.length * 10 * 1000)
         }
+
     }
 
     // Makes API GET request to initialize quiz questions.
@@ -447,13 +479,20 @@ export function Quiz() {
         initializeQuiz()
     }, [])
 
+    useEffect(() => {
+        if (initialTime) {
+            start()
+            console.log(timeLeft)
+        }
+    }, [initialTime])
+
     return (
             <div>
                 <Results usrAnswrs={usrAnswrs} index={indx} qid={qid} mcqData={questions} score={score}/>
                 <div className={"quiz"}>
                     <Score scre={scre}/>
                     <span className={"logo"}>QUIZZER!</span>
-                    <MultipleChoiceQuestion mcq={questions[index]} usrAnswrs={usrAnswrs} indx={indx} scre={scre} qid={qid} mcqData={questions}/>
+                    <MultipleChoiceQuestion mcq={questions[index]} usrAnswrs={usrAnswrs} indx={indx} scre={scre} qid={qid} mcqData={questions} time={time}/>
                 </div>
             </div>
     )
@@ -499,7 +538,8 @@ function PreloadedQuizResults({ usrAnswrs, index, qid, mcqData, score }) {
 
 export function PreloadedQuiz() {
     const { state } = useLocation()
-    const { qid } = useParams()
+    const { qid, amount  } = useParams()
+
 
     useEffect(() => {
         let loadedQuestions = []
@@ -507,10 +547,13 @@ export function PreloadedQuiz() {
             const mcq = new MultipleChoiceQuestionBucket(question)
             loadedQuestions.push(mcq)
         })
+        const initialTime = state.length * 10000, interval = 1000
+
         setQuestions(loadedQuestions)
     }, [])
 
     const [ questions, setQuestions ] = useState([])
+
     const [ userAnswers, setUserAnswers ] = useState([]), usrAnswrs = {userAnswers: userAnswers, setUserAnswers: setUserAnswers}
     const [ index, setIndex ] = useState(0), indx = {index: index, setIndex: setIndex, n: state.length}
     const [ score, setScore ] = useState(0), scre = {score: score, setScore: setScore}

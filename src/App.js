@@ -5,6 +5,7 @@ import './public/home.css'
 import './public/login.css'
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { ModalProvider } from "react-modal-hook";
 
 import { initializeApp } from "firebase/app";
 
@@ -56,7 +57,9 @@ function App() {
 
    return (
         <Router>
-            <AppContent/>
+            <ModalProvider>
+                <AppContent/>
+            </ModalProvider>
         </Router>
     );
 }
