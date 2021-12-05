@@ -1,5 +1,5 @@
-import React, {useEffect, useRef, useState} from 'react'
-import {getAuth, updateProfile, onAuthStateChanged} from "firebase/auth";
+import React, {useEffect, useState} from 'react'
+import {getAuth, updateProfile} from "firebase/auth";
 import {useAuthState, useCreateUserWithEmailAndPassword, useSignInWithEmailAndPassword} from "react-firebase-hooks/auth";
 
 export function RegistrationForm({ initial }) {

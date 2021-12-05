@@ -7,24 +7,30 @@ import './public/login.css'
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { ModalProvider } from "react-modal-hook";
 
-import { initializeApp } from "firebase/app";
+import {PrivateRoute} from "./utils/components/PrivateRoute";
+import {APIQueryQuiz} from "./components/quiz/APIQueryQuiz";
+import {PreloadedQuiz} from "./components/quiz/PreloadedQuiz";
+import {QuizzerHome} from "./components/home/QuizzerHome";
+import {initializeApp} from "firebase/app";
+import {getFirestore} from "firebase/firestore";
+import {QuizzerLogin} from "./components/login/QuizzerLogin";
 
-import {PreloadedQuiz, Quiz} from "./components/quiz";
-import {Login} from "./components/login";
-import {PrivateRoute} from "./components/routes";
-import {Home} from "./components/home.js";
+window.$SECONDS_PER_QUESTION = (1/15) * 60 * 1000
+
+const firebaseConfig = require("./utils/firebase-config.json")
+const app = initializeApp(firebaseConfig)
 
 function AppContent() {
     return (
         <Routes>
 
-            <Route path="/quiz/:id/:amount/:category/:difficulty/:type" element={
+            <Route path="/quiz/:qid/:uid" element={
                 <PrivateRoute>
-                    <Quiz/>
+                    <APIQueryQuiz/>
                 </PrivateRoute>}>
             </Route>
 
-            <Route path="/quiz/:qid" element={
+            <Route path="/quiz/:qid/:uid/:instance" element={
                 <PrivateRoute>
                     <PreloadedQuiz/>
                 </PrivateRoute>}>
@@ -32,17 +38,18 @@ function AppContent() {
 
             <Route path="/quiz" element={
                 <PrivateRoute>
+
                 </PrivateRoute>
             }/>
 
             <Route path="/home" element={
                 <PrivateRoute>
-                    <Home/>
+                    <QuizzerHome/>
                 </PrivateRoute>
             }/>
 
             <Route path={"/login"} element={
-                <Login/>
+                <QuizzerLogin/>
             }/>
 
             <Route path={"/"} element={

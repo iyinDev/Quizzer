@@ -1,5 +1,4 @@
 .results-background {
-    display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
     z-index: 2; /* Sit on top */
     left: 0;
@@ -94,7 +93,7 @@
     color: var(--primary);
 }
 .check {
-    background: var(--pentary);
+    background: var(--pentary) url("../assets/next.png") no-repeat center/90%;
     bottom: 0;
     right: 0;
 
@@ -105,10 +104,6 @@
 
     transition: 0.1s ease-out;
 }
-.check:active {
-    bottom: -0.3vh;
-}
-
 
 .question {
     margin: 2vh auto;
@@ -172,6 +167,13 @@
 .current {
     box-shadow: rgba(0, 0, 0, 0.4) 0 .2rem .4rem, rgba(0, 0, 0, 0.3) 0px .7rem 1.3rem -.3rem, rgba(0, 0, 0, 0.2) 0px -.3rem 0px inset;
 }
+.other {
+    background: grey;
+    opacity: 0.4;
+}
+.incorrect-choice {
+    background: indianred;
+}
 
 
 .share:disabled {
@@ -185,23 +187,23 @@
     grid-template-columns: repeat(3, 1fr);
     grid-gap: 2vmax;
 
-    background: #fad44f;
     padding: 3vmax;
 }
 
 .report-buttons {
-    margin: 2vh auto;
-    padding: 2vmax;
-    background: #fad44f;
+    width: 100%;
+    justify-content: space-around;
+
+    padding: 0 3vw;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 3vh;
 }
 
 .report-bt {
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
 
     width: 25vw;
     height: 10vh;
@@ -209,7 +211,8 @@
     box-sizing: border-box;
     background: var(--pentary);
 
-    font-size: 3.5vmax;
+    font-family: var(--quizzer-font);
+    font-size: 3vmax;
     font-weight: 900;
     border: none;
 }
@@ -227,27 +230,26 @@
         width: 12.5vmax;
         height: 12.5vmax;
 
-        border: solid 2vmax;
         border-radius: 50%;
 
         text-align: center;
-        font-size: 8vmax;
+        font-size: 6vmax;
         font-family: var(--quizzer-font);
     }
 
     .correct {
         background: var(--pentary);
-        border: #359539 solid 2vmax;
+        border: #359539 solid 1.25vmax;
     }
 
     .incorrect {
         background: indianred;
-        border: #974343 solid 2vmax;
+        border: #974343 solid 1.25vmax;
     }
 
     .total {
         background: var(--secondary);
-        border: #004d86 solid 2vmax;
+        border: #004d86 solid 1.25vmax;
     }
 
 .bubble-label {

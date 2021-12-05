@@ -112,7 +112,7 @@ button {
 .cards,
     .panel,
     .create {
-        border: 1vmin solid;
+
     }
 
     .public-card {
@@ -144,7 +144,6 @@ button {
     }
 
     .public-card, .challenge-card {
-        border: 1vmin solid;
         padding: 0 2vw;
 
         position: relative;
@@ -214,6 +213,8 @@ button {
         position: absolute;
         top: 5%;
         right: 2.5%;
+
+        background: var(--pentary) url("../assets/play.png") no-repeat center/90%;
 
         width: 6.5vh;
         height: 6.5vh;
