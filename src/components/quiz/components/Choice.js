@@ -87,7 +87,6 @@ export function Choice({ question, choiceClass, answeredState, correctState, cho
         }
     }
 
-    debugger
     return (
         <button ref={ref} onClick={choiceHandler} className={choiceClass}>{question? question.choices[choiceClass] : ""}</button>
     )

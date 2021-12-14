@@ -15,7 +15,7 @@ import {Score} from "./components/Score.js";
 import {Question} from "./components/Question.js";
 
 
-function Results({ summary, qid, hideModal }) {
+function Results({ summary, qid, hideModal, share }) {
     const { state } = useLocation()
     const navigate = useNavigate()
 
@@ -56,7 +56,7 @@ function Results({ summary, qid, hideModal }) {
                 <ScoreBubble label={"total"} value={quizSummary.totalCount}/>
             </div>
             <div className={"report-buttons"}>
-                <Share questions={questions}/>
+                {share && <Share questions={questions}/>}
                 {/*<AddToChallengeQuizzes qid={qid} score={quizSummary.points} questions={questions}/>*/}
                 <button className={"card report-bt"} onClick={() => {navigate('/home')}}>HOME</button>
             </div>

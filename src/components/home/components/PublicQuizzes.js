@@ -62,7 +62,6 @@ export function PublicQuizzes() {
 
     function loadQuiz() {
         if (current) {
-            debugger
             const value = quizzes[current.current.id]
             const quiz = []
             value.data.forEach(q => {
@@ -84,7 +83,6 @@ export function PublicQuizzes() {
 
                 quiz.push(new BucketMCQ(mcqData))
             })
-            debugger
             navigate("/quiz/" + generateQuizPath(), {
                 state:
                     {
