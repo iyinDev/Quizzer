@@ -4,7 +4,7 @@ import {useCollectionData} from "react-firebase-hooks/firestore";
 export function Leaderboard() {
     const db = getFirestore()
     const leaderboard = query(collection(db, "leaderboard"), orderBy("score", "desc"), limit(5))
-    const [values, loading, error] = useCollectionData(leaderboard)
+    const [values] = useCollectionData(leaderboard)
 
     function Leader({ value, index }) {
         return (

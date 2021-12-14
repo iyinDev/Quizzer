@@ -40,7 +40,6 @@ export function Profile({ showModal }) {
             </div>
             <div className={"profile-user"}>Hi, {auth.currentUser.displayName? auth.currentUser.displayName.split(" ")[0] : ""}!</div>
             <LogoutButton/>
-            <button onClick={showModal} className={"card settings"}>SETTINGS</button>
         </div>
     )
 }

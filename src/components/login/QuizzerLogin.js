@@ -1,5 +1,5 @@
 import {useModal} from "react-modal-hook";
-import {getAuth, GoogleAuthProvider, signInWithPopup} from "firebase/auth";
+import {getAuth} from "firebase/auth";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {Modal} from "../../utils/modal";
 import {LoginForm, RegistrationForm} from "../../utils/form";
@@ -27,8 +27,7 @@ export function QuizzerLogin() {
      * @returns {JSX.Element}
      */
     function Register({ hideModal }) {
-        const auth = getAuth()
-
+        getAuth();
         return (
             <Modal header={"REGISTER"} hideModal={hideModal} size={"sm-thin"}>
                 <div className={"register-input"}>
@@ -43,8 +42,6 @@ export function QuizzerLogin() {
      * @returns {JSX.Element}
      */
     function LoginModal({ hideModal }) {
-        const auth = getAuth()
-
         return (
             <Modal header={"LOGIN"} hideModal={hideModal} size={"sm-thin"}>
                 <div className={"register-input"}>

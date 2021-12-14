@@ -1,4 +1,5 @@
 import {BucketMCQ} from "./bucket";
+import {customAlphabet} from "nanoid";
 
 export function loadQuizFromQuery(response, query) {
     let responseQuestions = []
@@ -11,13 +12,18 @@ export function loadQuizFromQuery(response, query) {
     return responseQuestions
 }
 
-export function createRandomID() {
-    var S4 = function() {
-        return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
-    };
-    return (S4()+ S4() + "-" + S4())
+export function generateQuizPath(instance=null) {
+    const nanoid = customAlphabet("BCDFGHJKLMNPQRSTVWYZ12567890", 6)
+
+    return nanoid() + (instance? "/" + nanoid() : "")
 }
 
-export function generateQuizPath(auth, instance=null) {
-    return createRandomID() + "/" + auth.currentUser.uid.substring(0, 6) + (instance? "/" + createRandomID() : "")
+export function generateDefaultQuizSummary (displayName) {
+    return {
+        points: 0,
+        incorrectCount: 0,
+        correctCount: 0,
+        totalCount: 0,
+        displayName: displayName,
+    }
 }

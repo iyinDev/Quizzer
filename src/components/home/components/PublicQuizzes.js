@@ -6,10 +6,12 @@ import {generateQuizPath} from "../../quiz/utils/utils";
 import {useEffect, useRef, useState} from "react";
 
 function PublicQuizLink({ value, currentPublicQuiz }) {
+    console.log(value)
+
     const ref = useRef()
     const [current, setCurrent] = currentPublicQuiz
 
-    const [timestamp, setTimestamp] = useState(new Date(value.createdAt.seconds * 1000))
+    const [timestamp] = useState(new Date(value.createdAt.seconds * 1000))
 
     function handler() {
         setCurrent(ref)
@@ -18,18 +20,19 @@ function PublicQuizLink({ value, currentPublicQuiz }) {
     useEffect(() => {
         if (current === ref) {
             ref.current.disabled = "true"
+            // noinspection JSUnresolvedVariable
             ref.current.style.background = "var(--pentary)"
         } else {
+            // noinspection JSUnresolvedVariable
             ref.current.style.background = "#FFD53D"
         }
     }, [current])
 
     return (
         <div ref={ref} id={value.qid} className={"public-quiz"} onClick={handler}>
-
             {value.createdBy.toUpperCase()} - {value.score}
             <div className={"timestamp"}>{timestamp.toDateString()}</div>
-            <div className={"category-stamp"}>CATEGORY - {value.data[0].category.toUpperCase()}</div>
+            <div className={"category-stamp"}>CATEGORY - {value.data[0]? value.data[0].category.toUpperCase() : ""}</div>
         </div>
     )
 }
@@ -39,10 +42,10 @@ export function PublicQuizzes() {
     const navigate = useNavigate()
     const db = getFirestore()
 
-    const currentPublicQuiz = useState(null), [current, setCurrent] = currentPublicQuiz
+    const currentPublicQuiz = useState(null), [current] = currentPublicQuiz
 
     const publicQuizzes = query(collection(db, "public-quizzes"), orderBy('score', 'desc'), limit(5))
-    const [values, loading, error] = useCollectionData(publicQuizzes)
+    const [values] = useCollectionData(publicQuizzes)
 
     const [quizzes, setQuizzes] = useState(null)
 
@@ -79,7 +82,7 @@ export function PublicQuizzes() {
 
                 quiz.push(mcqData)
             })
-            navigate("/quiz/" + generateQuizPath(auth, true), {
+            navigate("/quiz/" + generateQuizPath(), {
                 state:
                     {
                         quiz: quiz,
@@ -93,7 +96,7 @@ export function PublicQuizzes() {
             <div className={"public-label"}>PUBLIC QUIZZES!</div>
             <button className={"play-quiz"} onClick={loadQuiz}/>
             <div className={"public-quiz-list"}>
-                {values && values.map(value => <PublicQuizLink value={value} currentPublicQuiz={currentPublicQuiz}/>)}
+                {values && values.map(value => <PublicQuizLink key={value.qid} value={value} currentPublicQuiz={currentPublicQuiz}/>)}
             </div>
         </div>
     )

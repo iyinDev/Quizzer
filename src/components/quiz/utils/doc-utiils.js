@@ -2,6 +2,7 @@ import {addDoc, collection, doc, getFirestore, setDoc, Timestamp} from "firebase
 import {getAuth} from "firebase/auth";
 
 export function createQuizDoc(quizData, score, qid, title = null) {
+    debugger
     let extracted = []
     Object.keys(quizData).forEach(question => {
         extracted.push({
@@ -42,6 +43,7 @@ export function recordOnComplete(running, quizSummary, questions, qid) {
             console.log("Error. -> " + error.message)
         })
         const userHistory = doc(userRef, 'quiz-history', qid)
+        debugger
         const newDoc = createQuizDoc(questions, score, qid)
         setDoc(userHistory, newDoc).then(() => {
             console.log("Document set at " + userHistory.path)

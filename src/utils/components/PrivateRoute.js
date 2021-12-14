@@ -1,6 +1,5 @@
-import {Link, Navigate} from 'react-router-dom'
+import {Navigate} from 'react-router-dom'
 import {getAuth} from "firebase/auth";
-import {useAuthState} from "react-firebase-hooks/auth";
 
 /**
  * Child elements in route of this div are inaccessible unless navigated to.

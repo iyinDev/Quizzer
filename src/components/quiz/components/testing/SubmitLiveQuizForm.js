@@ -1,18 +1,20 @@
-import useFetch from "use-http";
-import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {getAuth} from "firebase/auth";
-import {generateQuizPath, loadQuizFromQuery} from "../../quiz/utils/utils";
-import {DropdownMenu} from "../../../utils/components/DropdownMenu";
+import useFetch from "use-http";
+import {generateQuizPath, loadQuizFromQuery} from "../../utils/utils";
+import {Player} from "../../../../utils/classes/Player";
+import {doc, getFirestore, setDoc} from "firebase/firestore";
 
 /**
  * The button to submit a Quiz form.
  * @param categories An Object containing all available categories { id: category } ( passed from the GenerateQuiz component )
  * @returns {JSX.Element}
  */
-export function SubmitQuizFormButton({ categories }) {
+export function SubmitLiveQuizFormButton({ categories }) {
     const navigate = useNavigate()
     const auth = getAuth()
+    const db = getFirestore()
+
     const { get, response } = useFetch('https://opentdb.com')
 
     function generateQuizId() {
@@ -38,6 +40,7 @@ export function SubmitQuizFormButton({ categories }) {
      */
 
     async function submitForm() {
+        const qid = window.$ID_GENERATOR()
         // Gets references of all form input divs.
         const inputs = {
             amount: document.getElementById("Amount"),
@@ -68,42 +71,31 @@ export function SubmitQuizFormButton({ categories }) {
         const query = skeleton + ("&amount=" + quizParams[0]) + ("&category=" + quizParams[1]) + ("&difficulty=" + quizParams[2]) + ("&type=" + quizParams[3])
         const qR = await get(query)
 
-        let responseQuestions = loadQuizFromQuery(response, qR)
+        const quizData = []
+        loadQuizFromQuery(response, qR).forEach(bucket => {
+            quizData.push(bucket.data)
+        })
+        const initialTime = window.$SECONDS_PER_QUESTION_LIVE
+        await setDoc(doc(db, 'live-quizzes', qid), {
+            quiz: quizData,
+            initialTime: initialTime,
+            answeredCount: 0
+        }, {merge: true})
 
-        const quizRoute = '/quiz/' + generateQuizPath()
+        const livePlayer = new Player(auth.currentUser.displayName)
+
+        const quizRoute = '/quiz/live/' + qid
         navigate(quizRoute, {
                 state: {
-                    quiz: responseQuestions,
-                    initialTime: ((amount === '') ? 10 * window.$SECONDS_PER_QUESTION : amount * window.$SECONDS_PER_QUESTION)},
+                    ...livePlayer.user,
+                },
             }
         )
         console.log("Quiz route. -> " + quizRoute)
     }
 
     return (
-        <button className={"card submit-quiz-form"} type={"submit"} value={"Submit"}
-                onClick={submitForm}>Submit</button>
+        <button type={"submit"} value={"Submit"}
+                onClick={submitForm}>Live Quiz</button>
     )
 }
-
-/**
- * The Forms used on the GenerateQuiz page.
- * @param label a String containing the label of the form { amount, category, difficulty, type }.
- * @param content an Object where each key value is a list item for the DropdownMenu.
- * @returns {JSX.Element}
- */
-export function QuizInput({ label, content }) {
-    const [ formValue, setFormValue ] = useState("")
-
-    return (
-        <div className={"vertical"}>
-            <label className={label.toLowerCase() + "-label"}>{label}</label>
-            <div className={"h"}>
-                <div id={label} className={label.toLowerCase()} type={"text"}>{formValue}</div>
-                <DropdownMenu label={label} content={content} formSetter={setFormValue}/>
-            </div>
-        </div>
-    )
-}
-
-

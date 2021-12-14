@@ -5,12 +5,14 @@ import {useCollectionData} from "react-firebase-hooks/firestore";
 import {BucketMCQ} from "../../quiz/utils/bucket";
 import {generateQuizPath} from "../../quiz/utils/utils";
 import {useEffect, useRef, useState} from "react";
+import {instance} from "firebase-functions/lib/providers/database";
+
 
 function ChallengeQuizLink({ value, currentChallengeQuiz }) {
     const ref = useRef()
     const [current, setCurrent] = currentChallengeQuiz
 
-    const [timestamp, setTimestamp] = useState(new Date(value.createdAt.seconds * 1000))
+    const [timestamp] = useState(new Date(value.createdAt.seconds * 1000))
 
     function handler() {
         setCurrent(ref)
@@ -36,13 +38,12 @@ function ChallengeQuizLink({ value, currentChallengeQuiz }) {
 export function ChallengeQuizzes() {
     const auth = getAuth()
 
-    const currentChallengeQuiz = useState(null), [current, setCurrent] = currentChallengeQuiz
+    const currentChallengeQuiz = useState(null), [current] = currentChallengeQuiz
     const navigate = useNavigate()
 
     const db = getFirestore()
     const publicQuizzes = query(collection(db, "challenge-quizzes"))
-    debugger
-    const [values, loading, error] = useCollectionData(publicQuizzes)
+    const [values,] = useCollectionData(publicQuizzes)
 
     const [quizzes, setQuizzes] = useState(null)
 
@@ -77,7 +78,7 @@ export function ChallengeQuizzes() {
                     incorrect_answers: incorrect
                 }))
             })
-            navigate("/quiz/" + generateQuizPath(auth, true),
+            navigate("/quiz/" + generateQuizPath(),
                 {
                     state: {
                         quiz: quiz,
@@ -95,7 +96,7 @@ export function ChallengeQuizzes() {
             <div className={"challenge-label"}>CHALLENGE QUIZZES!</div>
             <button className={"play-quiz"} onClick={loadQuiz}/>
             <div className={"challenge-quiz-list"}>
-                {values && values.map(value => <ChallengeQuizLink value={value} currentChallengeQuiz={currentChallengeQuiz}/>)}
+                {values && values.map(value => <ChallengeQuizLink key={value.qid} value={value} currentChallengeQuiz={currentChallengeQuiz}/>)}
             </div>
         </div>
     )

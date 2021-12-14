@@ -16,21 +16,17 @@ import {Question} from "./components/Question.js";
 
 
 function Results({ summary, qid, hideModal }) {
-    debugger
-
+    const { state } = useLocation()
     const navigate = useNavigate()
-    const [quizSummary] = summary
 
-    useEffect(() => {
-        console.log(summary, qid, hideModal)
-    }, [summary, qid, hideModal])
+    const [questions] = useState(state? state.quiz : null)
+    const [quizSummary] = summary
 
     /**
      * Adds the current quiz to the firestore "public-quizzes" collection
-     * @param questions A Array of QuestionBucket objects.
      * @returns {JSX.Element}
      */
-    function Share(questions) {
+    function Share() {
         const ref = useRef()
         function shareQuiz() {
             const db = getFirestore()
@@ -38,12 +34,12 @@ function Results({ summary, qid, hideModal }) {
 
             const newPublicQuiz = doc(db, 'public-quizzes', qid)
 
+            console.log(questions)
             const newDoc = createQuizDoc(questions, quizSummary.points, qid)
             newDoc['createdBy'] = user
-
             setDoc(newPublicQuiz, newDoc).then(() => {
                 console.log("Document set at " + newPublicQuiz.path + ".")
-            })
+            }).catch(e => console.log(e.message))
             ref.current.disabled = true
         }
 
@@ -60,7 +56,7 @@ function Results({ summary, qid, hideModal }) {
                 <ScoreBubble label={"total"} value={quizSummary.totalCount}/>
             </div>
             <div className={"report-buttons"}>
-                <Share/>
+                <Share questions={questions}/>
                 {/*<AddToChallengeQuizzes qid={qid} score={quizSummary.points} questions={questions}/>*/}
                 <button className={"card report-bt"} onClick={() => {navigate('/home')}}>HOME</button>
             </div>
@@ -68,16 +64,39 @@ function Results({ summary, qid, hideModal }) {
     )
 }
 
-export function APIQueryQuiz() {
+export function APIQuiz() {
     const { state } = useLocation()
     const { qid } = useParams()
 
     // The quiz questions.
     const [ questions] = useState(state.quiz)
+    const [initialTime] = useState(state.quiz.length * window.$SECONDS_PER_QUESTION)
+
+    const answeredState = useState(null),
+        [answered, setAnswered] = answeredState
+    useEffect(() => {
+
+    }, [answered])
+
+    const choicesState = useState({
+        A: null,
+        B: null,
+        C: null,
+        D: null
+    }), [choices] = choicesState
 
     // The current index of the user in the questions state Array.
     const indexState = useState(0),
-        [ index ] = indexState
+        [ index, setIndex ] = indexState
+    useEffect(() => {
+        if (choices.A) {
+            for (let choice in choices) {
+                const currChoice = choices[choice]
+                currChoice.current.className = 'choice'
+                currChoice.current.disabled = false
+            }
+        }
+    }, [index])
 
     // A summary of the user's quiz progress (e.g. # of correct answers, # of incorrect answers, points, etc.).
     const summary = useState({
@@ -86,19 +105,14 @@ export function APIQueryQuiz() {
             incorrectCount: 0,
             totalCount: 0
     }),
-        [ quizSummary] = summary
+        [ quizSummary ] = summary
+    useEffect(() => {
+        console.log(index)
+    }, [index])
 
     // The running state of the entirety of the quiz.
     const runningState = useState(null),
         [running] = runningState
-
-    // The countdown timer being used for the ProgressBar.
-    const time = useCountDown(state.initialTime, 1000)
-
-    // Listens for changes to quizSummary.
-    useEffect(() => {
-        console.log(quizSummary)
-    }, [quizSummary])
 
     // Automatic book-keeping of the user quiz on completion.
     useEffect(() => {
@@ -106,13 +120,13 @@ export function APIQueryQuiz() {
     }, [qid, questions, quizSummary, quizSummary.points, running])
 
     const [showResultsModal, hideResultsModal] = useModal(() => (
-        <Results qid={qid} summary={summary} hideModal={hideResultsModal}/>
+        <Results qid={qid} summary={summary} questions={questions} hideModal={hideResultsModal}/>
     ), [summary])
     useEffect(() => {
-        if (running === false && quizSummary.totalCount > 0) {
+        if (running === false) {
             showResultsModal()
         }
-    }, [running, quizSummary, showResultsModal])
+    }, [runningState, quizSummary, showResultsModal])
 
 
     return (
@@ -120,7 +134,13 @@ export function APIQueryQuiz() {
             <div className={"quiz"}>
                 <Score summary={summary}/>
                 <span className={"logo"}>QUIZZER!</span>
-                <Question question={questions[index]} indexState={indexState} timeState={time} runningState={runningState} summaryState={summary} />
+                <Question question={questions[index]}
+                          indexState={indexState}
+                          initialTime={initialTime}
+                          runningState={runningState}
+                          summaryState={summary}
+                          answeredState={answeredState}
+                          choicesState={choicesState}/>
             </div>
         </div>
     )

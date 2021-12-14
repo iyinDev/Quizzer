@@ -43,4 +43,15 @@ export class BucketMCQ {
             D: allChoices[3]
         }
     }
+
+    get data() {
+        return {
+            choices: this.choices,
+            correctAnswer: this.correctAnswer,
+            question: this.question,
+            category: this.category,
+            difficulty: this.difficulty,
+
+        }
+    }
 }

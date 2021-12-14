@@ -1,5 +1,5 @@
 import {useComponentVisible} from "../use-component-visible";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 
 /**
  * The menu containing the available options.
@@ -10,10 +10,6 @@ import {useEffect, useState} from "react";
  */
 export function DropdownMenu({ label, content, formSetter }) {
     const { ref, isComponentVisible, setIsComponentVisible } =  useComponentVisible(false)
-
-    useEffect(() => {
-        console.log(label, isComponentVisible)
-    }, [isComponentVisible])
 
     /**
      * The item in the DropdownMenu.

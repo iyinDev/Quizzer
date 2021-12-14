@@ -4,9 +4,8 @@ import {Profile} from "./components/Profile";
 import {Leaderboard} from "./components/Leaderboard";
 import {ChallengeQuizzes} from "./components/ChallengeQuizzes";
 import {PublicQuizzes} from "./components/PublicQuizzes";
-import {initializeApp} from "firebase/app";
-import {getFirestore} from "firebase/firestore";
-import {CreateQuizPanel, QuizInput, SubmitQuizFormButton} from "./components/QuizForm";
+import {QuizInput, SubmitQuizFormButton} from "./components/QuizForm";
+import {SubmitLiveQuizFormButton} from "../quiz/components/testing/SubmitLiveQuizForm";
 
 
 
@@ -54,16 +53,8 @@ export function QuizzerHome() {
                     setCategories(categoriesObj)
                 }
             }
-            fetchAvailableCategories()
-        }, [])
-
-        // When all categories have loaded.
-        useEffect(() => {
-            if (categories) {
-                console.log("Loaded categories.")
-            }
-        }, [categories])
-
+            fetchAvailableCategories().then(null)
+        }, [get, response.ok])
 
         return (
             <div className={"create card"}>
@@ -75,6 +66,7 @@ export function QuizzerHome() {
                     <QuizInput label={"Type"} content={types? types : []}/>
                 </div>
                 <SubmitQuizFormButton categories={categories}/>
+                {/*<SubmitLiveQuizFormButton categories={categories}/>*/}
             </div>
         )
     }

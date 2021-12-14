@@ -10,8 +10,8 @@ export function AuthWithGoogle() {
     function loginHandler() {
         signInWithPopup(auth, provider)
             .then((result) => {
-                const credential = GoogleAuthProvider.credentialFromResult(result);
-                const token = credential.accessToken;
+                // const credential = GoogleAuthProvider.credentialFromResult(result);
+                // const token = credential.accessToken;
                 const user = result.user;
                 console.log("User signed in. -> " + user.email)
                 // ...
@@ -19,7 +19,7 @@ export function AuthWithGoogle() {
             const errorMessage = error.message;
             const email = error.email;
             // The AuthCredential type that was used.
-            const credential = GoogleAuthProvider.credentialFromError(error);
+            // const credential = GoogleAuthProvider.credentialFromError(error);
 
             console.log("Error. -> "  + errorMessage + " -> " + email)
             // ...

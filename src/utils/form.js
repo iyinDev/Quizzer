@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react'
 import {getAuth, updateProfile} from "firebase/auth";
-import {useAuthState, useCreateUserWithEmailAndPassword, useSignInWithEmailAndPassword} from "react-firebase-hooks/auth";
+import {useCreateUserWithEmailAndPassword, useSignInWithEmailAndPassword} from "react-firebase-hooks/auth";
 
 export function RegistrationForm({ initial }) {
     const auth = getAuth()
-    const [createUserWithEmailAndPassword, user, loading, err] = useCreateUserWithEmailAndPassword(auth)
+    const [createUserWithEmailAndPassword] = useCreateUserWithEmailAndPassword(auth)
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -12,7 +12,7 @@ export function RegistrationForm({ initial }) {
 
     // States for checking the errors
     const [submitted, setSubmitted] = useState(false);
-    const [error, setError] = useState(false);
+    const [, setError] = useState(false);
 
     // Handling the name change
     const handleName = (e) => {
@@ -44,15 +44,6 @@ export function RegistrationForm({ initial }) {
         );
     };
 
-    // Showing error message if error is true
-    const errorMessage = () => {
-        return (
-            <div className={"auth-error"} style={{display: error ? '' : 'none'}}>
-                <div className={"message center"}>ENTER ALL FIELDS</div>
-            </div>
-        );
-    };
-
     const handleSubmit = (e) => {
         e.preventDefault();
         if (name === '' || email === '' || password === '') {
@@ -69,10 +60,6 @@ export function RegistrationForm({ initial }) {
 
         }
     };
-
-    useAuthState(auth, () => {
-
-    })
 
     return (
         <div>
@@ -105,13 +92,13 @@ export function RegistrationForm({ initial }) {
 
 export function LoginForm({ initial }) {
     const auth = getAuth()
-    const [signInWithEmailAndPassword, user, loading, err] = useSignInWithEmailAndPassword(auth)
+    const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth)
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     // States for checking the errors
-    const [submitted, setSubmitted] = useState(false);
+    const [, setSubmitted] = useState(false);
     const [error, setError] = useState(null);
     const [message, setMessage] = useState(null)
 
@@ -133,8 +120,8 @@ export function LoginForm({ initial }) {
             <div id={"auth-message"} className={"auth-message"} style={{display: error ? '' : 'none'}}>
                 <div className={"message center"}>{message}</div>
             </div>
-        );
-    };
+        )
+    }
 
     useEffect(() => {
         const msgBackground = document.getElementById("auth-message")
@@ -158,8 +145,10 @@ export function LoginForm({ initial }) {
                 setMessage("Enter your password")
             }
         } else {
+
             signInWithEmailAndPassword(email, password).then(() => {
                 if (auth.currentUser) {
+                    debugger
                     setSubmitted(true);
                     setError(false);
                     console.log(auth.currentUser)
