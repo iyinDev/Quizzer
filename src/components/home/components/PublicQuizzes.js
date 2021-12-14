@@ -7,8 +7,6 @@ import {useEffect, useRef, useState} from "react";
 import {BucketMCQ} from "../../quiz/utils/bucket";
 
 function PublicQuizLink({ value, currentPublicQuiz }) {
-    console.log(value)
-
     const ref = useRef()
     const [current, setCurrent] = currentPublicQuiz
 

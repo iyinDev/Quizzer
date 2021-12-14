@@ -1,5 +1,4 @@
 import {useEffect, useRef} from "react";
-import {useLocation} from "react-router-dom";
 
 /**
  * The Multiple Choice Question Choice component.
@@ -7,7 +6,6 @@ import {useLocation} from "react-router-dom";
  */
 export function Choice({ question, choiceClass, answeredState, correctState, choicesState, timeState, summaryState }) {
     const ref = useRef()
-    const { state } = useLocation()
 
     const [, setAnswered ] = answeredState
     const [ correct, setCorrect ] = correctState

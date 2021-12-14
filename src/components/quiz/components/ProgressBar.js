@@ -10,17 +10,14 @@ export function ProgressBar({ runningState, initialTime, time }) {
     const ref = useRef()
 
     const [ running, setRunning ] = runningState
-
-    const { state } = useLocation()
-    const [timeLeft, {start, reset}] = useCountDown(0)
-
+    const [timeLeft, {start}] = useCountDown(0)
 
     useEffect(() => {
         if ( initialTime) {
             start(initialTime)
             setRunning(true)
         }
-    }, [initialTime])
+    }, [initialTime, setRunning, start])
 
     // Checks if the timer has completed or is still running to display results.
     useEffect(() => {
@@ -33,7 +30,7 @@ export function ProgressBar({ runningState, initialTime, time }) {
             ref.current.style.width = ((timeLeft / initialTime) * 100) + "%"
         }
 
-    }, [timeLeft])
+    }, [initialTime, running, setRunning, timeLeft])
 
     return(
         <div className={"question-progress-background"}>

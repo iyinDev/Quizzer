@@ -1,7 +1,4 @@
-// noinspection JSUnresolvedVariable
-
-import {useEffect, useRef, useState} from "react";
-import {useLocation} from "react-router-dom";
+import {useRef, useState} from "react";
 import {NextQuestion} from "./NextQuestion";
 import {ProgressBar} from "./ProgressBar";
 import {Choice} from "./Choice";
@@ -13,32 +10,9 @@ import {Choice} from "./Choice";
 export function Question({question, answeredState, choicesState, time, initialTime, summaryState, indexState, runningState}) {
     const ref = useRef()
 
-    // const answeredState = useState(null), [answered] = answeredState
-    // const correctState = useState(null)
-    // const choicesState = useState({
-    //     A: null,
-    //     B: null,
-    //     C: null,
-    //     D: null
-    // }), [choices] = choicesState
-
-    const questionRunning = useState(null)
-
-    const [answered] = useState(false)
     const [choices] = choicesState
 
     const correctState = useState(null)
-
-    // useEffect(() => {
-    //     if (!answered) {
-    //         Object.keys(choices).forEach(key => {
-    //             if (choices[key]) {
-    //                 choices[key].current.className = "choice"
-    //                 choices[key].current.disabled = false
-    //             }
-    //         })
-    //     }
-    // }, [])
 
     return (
         <div>
@@ -54,6 +28,7 @@ export function Question({question, answeredState, choicesState, time, initialTi
             </div>
             <div className={"choices"}>
                 {choices && Object.keys(choices).map(key => <Choice
+                    key={key}
                     question={question}
                     choiceClass={key}
                     answeredState={answeredState}

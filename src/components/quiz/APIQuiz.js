@@ -106,9 +106,6 @@ export function APIQuiz() {
             totalCount: 0
     }),
         [ quizSummary ] = summary
-    useEffect(() => {
-        console.log(index)
-    }, [index])
 
     // The running state of the entirety of the quiz.
     const runningState = useState(null),
