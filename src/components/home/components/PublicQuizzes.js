@@ -4,6 +4,7 @@ import {collection, getFirestore, limit, orderBy, query} from "firebase/firestor
 import {useCollectionData} from "react-firebase-hooks/firestore";
 import {generateQuizPath} from "../../quiz/utils/utils";
 import {useEffect, useRef, useState} from "react";
+import {BucketMCQ} from "../../quiz/utils/bucket";
 
 function PublicQuizLink({ value, currentPublicQuiz }) {
     console.log(value)
@@ -61,6 +62,7 @@ export function PublicQuizzes() {
 
     function loadQuiz() {
         if (current) {
+            debugger
             const value = quizzes[current.current.id]
             const quiz = []
             value.data.forEach(q => {
@@ -80,8 +82,9 @@ export function PublicQuizzes() {
                     incorrect_answers: incorrect
                 }
 
-                quiz.push(mcqData)
+                quiz.push(new BucketMCQ(mcqData))
             })
+            debugger
             navigate("/quiz/" + generateQuizPath(), {
                 state:
                     {
